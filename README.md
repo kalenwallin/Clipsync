@@ -1,32 +1,33 @@
-[![Clipsync logo](mac/ClipSync/Assets.xcassets/AppIcon.appiconset/Readme-logo.png)]
+![Clipsync logo](mac/ClipSync/Assets.xcassets/AppIcon.appiconset/Readme-logo.png)
 
 #  ClipSync: Seamless Universal Clipboard
 
-**ClipSync** is the ultimate tool to synchronize your clipboard across all your devices—**instantly** and **securely**. Copy on your Mac, paste on your Android. It's that simple. 🚀
+**ClipSync** is the ultimate tool to synchronize your clipboard across Android and Mac—**instantly** and **securely**. Copy on your Mac, paste on your Android. It's that simple. 
 
-> ✨ **Open Source, Secure, and Blazing Fast.**
+>  **Open Source, Secure, and Blazing Fast.**
 
 ---
 
-## 🔥 Features
+##  Features
 
-*   **⚡️ Instant Sync**: Copy text on one device and it’s immediately available on the other.
-*   **🔒 End-to-End Encryption**: Your data is encrypted locally before it leaves your device. No prying eyes.
-*   **📱 Cross-Platform**: Seamlessly works between **macOS** and **Android**.
-*   **🔋 Efficient**: Optimized for minimal battery drain and background usage.
-*   **🎨 Stunning UI**: Beautiful, native designs for both platforms.
+*   **Instant Sync**: Copy text on one device and it’s immediately available on the other. No extra buttons or annoying persistant notification to click on android to send the clipboard, just copy anything normally and paste it directly on the Mac OR the other way around
+*   **End-to-End Encryption**: Your data is encrypted with AES-256(GCM) locally before it leaves your device and decryted locally on each device before getting copied to the clipboard.
+*   **Cross-Platform**: Seamlessly works between **macOS** and **Android**.
+*   **Efficient**: Optimized for minimal battery drain and background usage.
+*   **Stunning UI**: Beautiful, native designs for both platforms.
+
 
 ---
 
 ## 🛠 Tech Stack
 
-### 🍏 macOS App
+###  macOS App
 *   **Language**: Swift 5.9
 *   **Framework**: SwiftUI & AppKit
 *   **Architecture**: MVVM
 *   **Dependencies**: Firebase, Lottie
 
-### 🤖 Android App
+###  Android App
 *   **Language**: Kotlin
 *   **Framework**: Jetpack Compose, Material 3
 *   **Architecture**: MVVM / Clean Architecture
@@ -34,31 +35,16 @@
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 To keep things organized, this repository contains both client applications.
 
-### 🍏 macOS Setup
+###  macOS Setup
 
-1.  Navigate to the Mac folder:
-    ```bash
-    cd ios-app # or whatever you named the folder
-    ```
-2.  **Secrets**: Download `GoogleService-Info.plist` from your Firebase Console and place it in the `ClipSync/` root.
-3.  **Run**: Open `ClipSync.xcodeproj` (or `.xcworkspace`) in Xcode 15+ and run.
 
 ### 🤖 Android Setup
 
-1.  Navigate to the Android folder:
-    ```bash
-    cd android-app
-    ```
-2.  **Secrets**:
-    *   Download `google-services.json` from Firebase and place it in `app/`.
-    *   Ensure any `local.properties` values are set if required.
-3.  **Run**: Open the project in Android Studio Iguana+ and run on your device/emulator.
 
----
 
 ## 🛡 Security & Secrets
 

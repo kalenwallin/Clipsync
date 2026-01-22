@@ -290,9 +290,6 @@ class ClipboardManager: ObservableObject {
         clipboardListener?.remove()
         clipboardListener = nil
         isListenerActive = false
-        clipboardListener?.remove()
-        clipboardListener = nil
-        isListenerActive = false
     }
     
     // CRYPTO HELPERS
@@ -305,7 +302,6 @@ class ClipboardManager: ObservableObject {
             let key = SymmetricKey(data: keyData)
             let sealedBox = try AES.GCM.seal(data, using: key)
             return sealedBox.combined?.base64EncodedString()
-        } catch {
         } catch {
             return nil
         }
@@ -320,7 +316,6 @@ class ClipboardManager: ObservableObject {
             let sealedBox = try AES.GCM.SealedBox(combined: data)
             let decryptedData = try AES.GCM.open(sealedBox, using: key)
             return String(data: decryptedData, encoding: .utf8)
-        } catch {
         } catch {
             return nil
         }
