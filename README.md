@@ -87,7 +87,7 @@ We love contributions!
 
 If you find ClipSync useful and want to support its development, consider buying me a coffee!
 
-<a href="https://buymeacoffee.com/clipsync"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=clipsync&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" width="220"></a>
+<a href="https://buymeacoffee.com/clipsync"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200"></a>
 
 ---
 
