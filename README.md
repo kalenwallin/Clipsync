@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="mac/ClipSync/Assets.xcassets/AppIcon.appiconset/Readme-logo.png" width="80">
-</p>
+![Clipsync logo](mac/ClipSync/Assets.xcassets/AppIcon.appiconset/Readme-logo.png)
 
 # ClipSync: Seamless Universal Clipboard
 
