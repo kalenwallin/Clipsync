@@ -93,7 +93,6 @@ fun Homescreen(
     
     // Permission Checks
     var isAccessibilityEnabled by remember { mutableStateOf(false) }
-    var isNotificationEnabled by remember { mutableStateOf(false) }
     var isBatteryUnrestricted by remember { mutableStateOf(false) }
 
     // Feature Toggles (Preferences)
@@ -105,7 +104,6 @@ fun Homescreen(
     // Check permissions function
     fun checkPermissions() {
         isAccessibilityEnabled = checkServiceStatus(context, ClipboardAccessibilityService::class.java)
-        isNotificationEnabled = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")?.contains(context.packageName) == true
         
         val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         isBatteryUnrestricted = pm.isIgnoringBatteryOptimizations(context.packageName)
@@ -299,23 +297,6 @@ fun Homescreen(
                                 )
                                 
                                 HorizontalDivider(modifier = Modifier.padding(vertical = (16 * scale).dp), color = Color(0xFFE5E5EA))
-                                
-                                StatusRow(
-                                    label = "OTP Detection",
-                                    isActive = isNotificationEnabled,
-                                    isWarning = true,
-                                    fontFamily = robotoFontFamily,
-                                    scale = scale,
-                                    onClick = {
-                                        if (!isNotificationEnabled) {
-                                            val intent = android.content.Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-                                            context.startActivity(intent)
-                                            Toast.makeText(context, "Allow Notification Access", Toast.LENGTH_LONG).show()
-                                        }
-                                    }
-                                )
-
-                                HorizontalDivider(modifier = Modifier.padding(vertical = (16 * scale).dp), color = Color(0xFFE5E5EA))
 
                                 // Remote Device Status
                                 StatusRow(
@@ -351,7 +332,7 @@ fun Homescreen(
                         }
                         
                         // Show warning if ANY critical permission is missing
-                        if (!isAccessibilityEnabled || !isNotificationEnabled || !isBatteryUnrestricted) {
+                        if (!isAccessibilityEnabled || !isBatteryUnrestricted) {
                             Spacer(modifier = Modifier.height((12 * scale).dp))
                             Row(verticalAlignment = Alignment.Top) {
                                 Icon(
