@@ -47,7 +47,9 @@ object FirestoreManager {
                     return mapOf(
                         "macDeviceId" to macId,
                         "macDeviceName" to deviceName,
-                        "serverRegion" to jsonObject.optString("server", "IN")
+                        "serverRegion" to jsonObject.optString("server").ifEmpty {
+                            jsonObject.optString("serverRegion", "IN")
+                        }
                     )
                 }
             }

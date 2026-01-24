@@ -24,12 +24,20 @@ struct ClipSyncApp: App {
         
         // Auto-Detect Region (Every Launch)
         LocationHelper.shared.detectRegion { country in
-            let region = (country == "US") ? RegionConfig.REGION_US : RegionConfig.REGION_INDIA
+            // European Countries (Better latency to US than IN)
+            let euCountries = ["ES", "FR", "DE", "IT", "UK", "GB", "NL", "BE", "SE", "NO", "DK", "FI", "IE", "PT", "GR", "AT", "CH", "PL", "CZ", "HU", "RO"]
+            
+            let region: String
+            if let country = country, (country == "US" || euCountries.contains(country)) {
+                region = RegionConfig.REGION_US
+                print("🇺🇸 Auto-detected US/EU Region (\(country)) -> Using US Server")
+            } else {
+                region = RegionConfig.REGION_INDIA
+                print("📍 Auto-detected Region (\(country ?? "Unknown")) -> Using IN Server")
+            }
             
             // Check if region changed
             let current = UserDefaults.standard.string(forKey: "server_region")
-            if current != region {
-                UserDefaults.standard.set(region, forKey: "server_region")
             if current != region {
                 UserDefaults.standard.set(region, forKey: "server_region")
             }

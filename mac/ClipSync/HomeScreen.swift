@@ -6,6 +6,7 @@ import Lottie
 struct HomeScreen: View {
     @StateObject private var clipboardManager = ClipboardManager.shared
     @StateObject private var pairingManager = PairingManager.shared
+    @ObservedObject private var updateChecker = UpdateChecker.shared
 
     @AppStorage("syncToMac") private var syncToMac = true
     @AppStorage("syncFromMac") private var syncFromMac = true
@@ -300,6 +301,7 @@ struct HomeScreen: View {
         .ignoresSafeArea()
         .onAppear {
             tickID = UUID() // Replay tick animation
+            updateChecker.checkForUpdates() // Check for updates
             if !clipboardManager.isSyncPaused {
                 clipboardManager.startMonitoring()
                 clipboardManager.listenForAndroidClipboard()
@@ -308,6 +310,18 @@ struct HomeScreen: View {
                 contentOpacity = 1
                 contentOffset = 0
             }
+        }
+        .alert(isPresented: $updateChecker.updateAvailable) {
+            Alert(
+                title: Text("Update Available 🚀"),
+                message: Text("A new version (\(updateChecker.latestVersion)) is available!"),
+                primaryButton: .default(Text("Download")) {
+                    if let url = updateChecker.downloadURL {
+                        NSWorkspace.shared.open(url)
+                    }
+                },
+                secondaryButton: .cancel()
+            )
         }
         .enableInjection()
     }

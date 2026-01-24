@@ -90,14 +90,17 @@ fun LandingScreen(
     LaunchedEffect(Unit) {
         // Only check if region is not already explicitly set (fresh install)
         if (!DeviceManager.isRegionSet(context)) {
-            val countryCode = LocationHelper.detectCountryCode()
-            if (countryCode == "US") {
+            val countryCode = LocationHelper.detectCountryCode() ?: "IN" // Default to IN if null
+            
+            // European Countries (Better latency to US than IN)
+            val euCountries = setOf("ES", "FR", "DE", "IT", "UK", "GB", "NL", "BE", "SE", "NO", "DK", "FI", "IE", "PT", "GR", "AT", "CH", "PL", "CZ", "HU", "RO")
+            
+            if (countryCode == "US" || euCountries.contains(countryCode)) {
                 DeviceManager.setTargetRegion(context, "US")
-                Log.d("LandingScreen", "🇺🇸 Auto-detected US Region")
-            } else if (countryCode != null) {
-                // Default is IN, no action needed unless we want to be explicit
+                Log.d("LandingScreen", "🇺🇸 Auto-detected US/EU Region ($countryCode) -> Using US Server")
+            } else {
                 DeviceManager.setTargetRegion(context, "IN")
-                Log.d("LandingScreen", "📍 Auto-detected Non-US Region (${countryCode}), defaulting to IN")
+                Log.d("LandingScreen", "📍 Auto-detected Region ($countryCode) -> Using IN Server")
             }
         }
 

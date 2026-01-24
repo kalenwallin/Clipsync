@@ -93,11 +93,18 @@ class PairingManager: ObservableObject {
             
             // Check if pairing has timestamp
             guard let timestamp = data["timestamp"] as? Timestamp else {
-            if pairingDate > startTime {
-                validPairing = doc
-                break
+                continue
             }
-        }
+            
+            let pairingDate = timestamp.dateValue()
+            
+            // Only accept pairings created AFTER we started listening
+            if let startTime = self.listenStartTime {
+                if pairingDate > startTime {
+                    validPairing = doc
+                    break
+                }
+            }
         
         guard let pairingDoc = validPairing else {
             return

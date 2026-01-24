@@ -34,6 +34,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,6 +97,17 @@ fun Homescreen(
     var isAccessibilityEnabled by remember { mutableStateOf(false) }
     var isBatteryUnrestricted by remember { mutableStateOf(false) }
 
+    // Update Checker State
+    var updateInfo by remember { mutableStateOf<UpdateChecker.UpdateInfo?>(null) }
+    var showUpdateDialog by remember { mutableStateOf(false) }
+    val currentVersion = "1.0" // TODO: Get this dynamically from BuildConfig in real app
+
+    // Update Checker State
+    var updateInfo by remember { mutableStateOf<UpdateChecker.UpdateInfo?>(null) }
+    var showUpdateDialog by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val currentVersion = "1.0.0" // TODO: Get this dynamically from BuildConfig in real app
+
     // Feature Toggles (Preferences)
     var syncToMac by remember { mutableStateOf(DeviceManager.isSyncToMacEnabled(context)) }
     var syncFromMac by remember { mutableStateOf(DeviceManager.isSyncFromMacEnabled(context)) }
@@ -126,6 +139,46 @@ fun Homescreen(
         delay(100)
         showContent = true
         checkPermissions() // Initial check
+        
+        // Check for updates
+        scope.launch {
+            val info = UpdateChecker.checkForUpdates("v$currentVersion")
+            if (info != null) {
+                updateInfo = info
+                showUpdateDialog = true
+            }
+        }
+    }
+
+    // Update Dialog
+    if (showUpdateDialog && updateInfo != null) {
+        AlertDialog(
+            onDismissRequest = { showUpdateDialog = false },
+            title = { Text(text = "Update Available 🚀") },
+            text = { 
+                Column {
+                    Text("A new version (${updateInfo!!.version}) is available!")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Safe to update? Yes. It's from your own repo.")
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(updateInfo!!.downloadUrl))
+                        context.startActivity(intent)
+                        showUpdateDialog = false
+                    }
+                ) {
+                    Text("Download")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUpdateDialog = false }) {
+                    Text("Later")
+                }
+            }
+        )
     }
 
     // Keep the SERVICE listener for real-time clipboard SYNC
