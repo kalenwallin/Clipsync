@@ -14,7 +14,6 @@ struct ClipSyncApp: App {
     @ObservedObject private var pairingManager = PairingManager.shared
     
     init() {
-    init() {
         // Initialize default user preferences
 
         UserDefaults.standard.register(defaults: [
@@ -49,9 +48,6 @@ struct ClipSyncApp: App {
         if PairingManager.shared.isPaired {
              ClipboardManager.shared.startMonitoring()
              ClipboardManager.shared.listenForAndroidClipboard()
-        }
-        
-            ClipboardManager.shared.listenForAndroidClipboard()
         }
     }
     
@@ -236,8 +232,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if isMainWindowVisible {
              // FORCE regular policy if we have a window, don't wait for 'visible' or 'key' status
              // surviving "NotVisible" state from logs
-            if NSApp.activationPolicy() != .regular {
-                NSApp.setActivationPolicy(.regular)
             if NSApp.activationPolicy() != .regular {
                 NSApp.setActivationPolicy(.regular)
             }

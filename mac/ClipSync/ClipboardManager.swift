@@ -141,10 +141,7 @@ class ClipboardManager: ObservableObject {
         guard let pairingId = PairingManager.shared.pairingId else { return }
         let macDeviceId = DeviceManager.shared.getDeviceId()
         
-        guard let encryptedContent = encrypt(text) else {
-        guard let encryptedContent = encrypt(text) else {
-            return
-        }
+        guard let encryptedContent = encrypt(text) else { return }
         
         let clipboardData: [String: Any] = [
             "content": encryptedContent,
@@ -155,9 +152,8 @@ class ClipboardManager: ObservableObject {
         ]
         
         db.collection("clipboardItems").addDocument(data: clipboardData) { error in
-        db.collection("clipboardItems").addDocument(data: clipboardData) { error in
             if let error = error {
-                // Handle upload error if needed
+                print("Error uploading clipboard: \(error)")
             }
         }
     }
@@ -300,4 +296,5 @@ class ClipboardManager: ObservableObject {
         return data
     }
 }
+
 

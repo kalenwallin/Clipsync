@@ -37,8 +37,6 @@ struct SplashScreen: View {
             }
         }
         .frame(width: frameSize, height: frameSize)
-        }
-        .frame(width: frameSize, height: frameSize)
         .onAppear {
             // --- Reveal Sequence ---
             // 1. Expand the orb from tiny → full 590x590 (Faster: 1.8s)

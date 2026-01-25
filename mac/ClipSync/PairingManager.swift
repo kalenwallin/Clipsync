@@ -98,8 +98,7 @@ class PairingManager: ObservableObject {
                     break
                 }
             }
-        
-        guard let pairingDoc = validPairing else {
+        }
             return
         }
         

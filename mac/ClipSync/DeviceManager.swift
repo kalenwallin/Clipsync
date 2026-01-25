@@ -16,13 +16,10 @@ class DeviceManager {
     func getDeviceId() -> String {
         // Check if already exists in UserDefaults
         if let existingId = UserDefaults.standard.string(forKey: deviceIdKey) {
-        if let existingId = UserDefaults.standard.string(forKey: deviceIdKey) {
             return existingId
         }
         
         // Generate new random UUID
-        let deviceId = UUID().uuidString
-        UserDefaults.standard.set(deviceId, forKey: deviceIdKey)
         let deviceId = UUID().uuidString
         UserDefaults.standard.set(deviceId, forKey: deviceIdKey)
         return deviceId
