@@ -119,7 +119,7 @@ class QRCodeGenerator: ObservableObject {
             return bytes.map { String(format: "%02hhX", $0) }.joined()
         }
         print("Failed to generate random key, falling back to legacy default (NOT SECURE)")
-        return "5D41402ABC4B2A76B9719D911017C59228B4637452F80776313460C451152033"
+        return Secrets.fallbackEncryptionKey
     }
 }
 

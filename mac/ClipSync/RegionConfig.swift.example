@@ -8,11 +8,11 @@ struct RegionConfig {
     // US Project Credentials
     // Derived from your GoogleService-Info.plist
     struct US {
-        static let projectID = "clipsync1-c3c3c"
-        static let googleAppID = "1:421995011629:ios:b635a91ef5b7399f8a22a4" // From iOS/Mac plist
-        static let gcmSenderID = "421995011629"
-        static let storageBucket = "clipsync1-c3c3c.firebasestorage.app"
-        static let apiKey = "AIzaSyBlG45LxPYuG6ZY-jgcAFe0gvoJF7WfsnY" // Transcribed from Screenshot
+        static let projectID = "YOUR_PROJECT_ID"
+        static let googleAppID = "YOUR_GOOGLE_APP_ID" 
+        static let gcmSenderID = "YOUR_GCM_SENDER_ID"
+        static let storageBucket = "YOUR_STORAGE_BUCKET"
+        static let apiKey = "YOUR_API_KEY" 
     }
     
     static func getOptions(for region: String) -> FirebaseOptions? {
@@ -30,5 +30,5 @@ struct RegionConfig {
 }
 
 struct Secrets {
-    static let fallbackEncryptionKey = "5D41402ABC4B2A76B9719D911017C59228B4637452F80776313460C451152033"
+    static let fallbackEncryptionKey = "YOUR_FALLBACK_KEY_32_BYTES_HEX"
 }

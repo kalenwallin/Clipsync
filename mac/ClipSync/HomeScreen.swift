@@ -355,7 +355,7 @@ struct HomeScreen: View {
     
     private func encryptTestString(_ string: String) -> String {
         guard let data = string.data(using: .utf8) else { return "" }
-        let sharedSecretHex = "5D41402ABC4B2A76B9719D911017C59228B4637452F80776313460C451152033"
+        let sharedSecretHex = Secrets.fallbackEncryptionKey
         
         do {
             let keyData = hexToData(hex: sharedSecretHex)
@@ -370,7 +370,7 @@ struct HomeScreen: View {
     
     private func decryptTestString(_ base64String: String) -> String? {
         guard let data = Data(base64Encoded: base64String) else { return nil }
-        let sharedSecretHex = "5D41402ABC4B2A76B9719D911017C59228B4637452F80776313460C451152033"
+        let sharedSecretHex = Secrets.fallbackEncryptionKey
         
         do {
             let keyData = hexToData(hex: sharedSecretHex)

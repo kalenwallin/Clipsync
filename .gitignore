@@ -49,11 +49,16 @@ captures/
 *.dex
 *.class
 
+
 # Secrets (Important!)
 google-services.json
 GoogleService-Info.plist
 **/google-services.json
 **/GoogleService-Info.plist
+RegionConfig.swift
+RegionConfig.kt
+Secrets.swift
+Secrets.kt
 
 # Archives
 *.zip

@@ -118,7 +118,7 @@ object DeviceManager {
     // Dynamic Encryption Key
     fun getEncryptionKey(context: Context): String {
         return getPrefs(context).getString(KEY_ENCRYPTION_KEY, null) 
-            ?: "5D41402ABC4B2A76B9719D911017C59228B4637452F80776313460C451152033" // Legacy Fallback
+            ?: Secrets.FALLBACK_ENCRYPTION_KEY // Legacy Fallback
     }
 
     fun saveEncryptionKey(context: Context, key: String) {

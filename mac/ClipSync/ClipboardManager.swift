@@ -33,7 +33,7 @@ class ClipboardManager: ObservableObject {
     private var clipboardListener: ListenerRegistration?
     
     private var sharedSecretHex: String {
-        return UserDefaults.standard.string(forKey: "encryption_key") ?? "5D41402ABC4B2A76B9719D911017C59228B4637452F80776313460C451152033"
+        return UserDefaults.standard.string(forKey: "encryption_key") ?? Secrets.fallbackEncryptionKey
     }
     
     private var isListenerActive = false
