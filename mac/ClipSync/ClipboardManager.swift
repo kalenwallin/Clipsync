@@ -25,6 +25,7 @@ class ClipboardManager: ObservableObject {
     
     private let pasteboard = NSPasteboard.general
     private var timer: DispatchSourceTimer? // Changed from Timer to DispatchSourceTimer
+    private var watchdogTimer: Timer? // Fix for infinite timer loop
     private var lastChangeCount = 0
     private var lastCopiedText: String = ""
     private var ignoreNextChange = false
@@ -226,20 +227,33 @@ class ClipboardManager: ObservableObject {
 
     // --- Watchdog ---
     // Restarts listener if no heartbeat for 60s (Fixes stale connection issues)
+    // --- Watchdog ---
+    // Restarts listener if no heartbeat for 60s (Fixes stale connection issues)
     private func startListenerWatchdog() {
-        Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] timer in
-            guard let self = self, self.isListenerActive else {
+        // Fix: Invalidate existing timer to prevent recursion buildup
+        watchdogTimer?.invalidate()
+        
+        watchdogTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] timer in
+            guard let self = self else { 
+                timer.invalidate() 
+                return 
+            }
+            
+            if !self.isListenerActive {
                 timer.invalidate()
                 return
             }
             
             if Date().timeIntervalSince(self.lastListenerUpdate) > 60 {
+                print("⚠️ Watchdog: Listener stale. Restarting...")
                 self.listenForAndroidClipboard()
             }
         }
     }
     
     func stopListening() {
+        watchdogTimer?.invalidate()
+        watchdogTimer = nil
         clipboardListener?.remove()
         clipboardListener = nil
         isListenerActive = false

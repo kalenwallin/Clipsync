@@ -490,7 +490,7 @@ fun InnerWhiteCard(scale: Float = 1f, content: @Composable () -> Unit) {
                 spotColor = Color.Black.copy(alpha = 0.08f)
             )
             .clip(RoundedCornerShape((24 * scale).dp))
-            .background(Color.White.copy(alpha = 0.95f))
+            .background(Color.White.copy(alpha = 0.6f))
             .border(
                 width = 1.dp,
                 color = Color(0xFFF2F2F7),
@@ -608,8 +608,18 @@ fun ActionButton(text: String, icon: ImageVector, backgroundColor: Color, fontFa
         modifier = Modifier
             .fillMaxWidth()
             .height((56 * scale).dp)
+            .shadow(
+                elevation = (4 * scale).dp,
+                shape = RoundedCornerShape((28 * scale).dp),
+                spotColor = backgroundColor.copy(alpha = 0.2f)
+            )
             .clip(RoundedCornerShape((28 * scale).dp))
-            .background(backgroundColor)
+            .background(Color.White.copy(alpha = 0.6f))
+            .border(
+                width = 1.dp,
+                color = backgroundColor.copy(alpha = 0.3f),
+                shape = RoundedCornerShape((28 * scale).dp)
+            )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
@@ -620,16 +630,16 @@ fun ActionButton(text: String, icon: ImageVector, backgroundColor: Color, fontFa
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size((20 * scale).dp)
+                tint = backgroundColor, // Icon color matches the theme color
+                modifier = Modifier.size((22 * scale).dp)
             )
             Spacer(modifier = Modifier.width((10 * scale).dp))
             Text(
                 text = text,
                 fontFamily = fontFamily,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 fontSize = (17 * scale).coerceIn(15f, 17f).sp,
-                color = Color.White
+                color = backgroundColor // Text color matches the theme color
             )
         }
     }

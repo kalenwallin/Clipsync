@@ -8,6 +8,12 @@ import kotlin.math.min
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import android.content.pm.PackageManager
+import android.os.Build
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -85,6 +91,24 @@ fun PermissionPage(onFinishSetup: () -> Unit = {}) {
         showButton = true
     }
 
+    // Launcher for POST_NOTIFICATIONS
+    var notificationGranted by remember { 
+        mutableStateOf(
+            if (Build.VERSION.SDK_INT >= 33) {
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+            } else {
+                true // Explicit permission not needed below Android 13
+            }
+        ) 
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            notificationGranted = isGranted
+        }
+    )
+
     // Check on first load & Periodic check
     LaunchedEffect(Unit) {
         accessibilityGranted = isAccessibilityServiceEnabled(context)
@@ -94,6 +118,10 @@ fun PermissionPage(onFinishSetup: () -> Unit = {}) {
             accessibilityGranted = isAccessibilityServiceEnabled(context)
             overlayGranted = Settings.canDrawOverlays(context)
             notificationAccessGranted = isNotificationServiceEnabled(context)
+            
+            if (Build.VERSION.SDK_INT >= 33) {
+                notificationGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+            }
 
             if (wasEnabled != accessibilityGranted && accessibilityGranted) {
                 Toast.makeText(context, "✓ Accessibility Enabled!", Toast.LENGTH_SHORT).show()
@@ -155,10 +183,21 @@ fun PermissionPage(onFinishSetup: () -> Unit = {}) {
                         iconRes = R.drawable.notifications,
                         title = "Notification",
                         description = "To alert you if sync pauses or updates arrives",
-                        isChecked = true, // Always true visually in original code? Or state? Original had separate logic. keeping as is.
-                        onToggle = { }, // Switch was dummy?
+                        isChecked = notificationGranted,
+                        onToggle = { 
+                            if (!notificationGranted) {
+                                if (Build.VERSION.SDK_INT >= 33) {
+                                    launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                } else {
+                                    // Open Settings as fallback
+                                    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                                    }
+                                    context.startActivity(intent)
+                                }
+                            }
+                        },
                         fontFamily = robotoFontFamily,
-                         isStatic = true, // For dummy switches
                          scale = scale
                      )
                  }

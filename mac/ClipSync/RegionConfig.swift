@@ -31,7 +31,7 @@ struct RegionConfig {
             return options
         }
         
-        // India uses the default bundled plist
+      
         return nil
     }
 }

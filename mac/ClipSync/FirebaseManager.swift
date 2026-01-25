@@ -16,19 +16,19 @@ class FirebaseManager {
         // --- Configuration (Region Aware) ---
         if FirebaseApp.app() == nil {
             let region = UserDefaults.standard.string(forKey: "server_region") ?? "IN"
-            print("🌍 Initializing Firebase for Region: \(region)")
+            print(" Initializing Firebase for Region: \(region)")
             
             if let options = RegionConfig.getOptions(for: region) {
                 // Custom Config (US)
                 FirebaseApp.configure(options: options)
-                print("🇺🇸 Configured with Custom Options (US)")
+                print(" Configured with Custom Options (US)")
             } else {
                 // Default Config (Info.plist -> India)
                 FirebaseApp.configure()
-                print("🇮🇳 Configured with Default plist (India)")
+                print(" Configured with Default plist (India)")
             }
         } else {
-            print("🔥 Firebase already configured")
+            print(" Firebase already configured")
         }
         
         db = Firestore.firestore()
@@ -38,15 +38,14 @@ class FirebaseManager {
         settings.cacheSettings = MemoryCacheSettings()
         db.settings = settings
         
-        print("✅ Firebase initialized successfully")
-        print("📦 Offline persistence: DISABLED (MacOS Fix)")
+        print(" Firebase initialized successfully")
+        print(" Offline persistence: DISABLED (MacOS Fix)")
         
         // Test network connectivity
         testNetworkConnection()
         
-        // TESTING MODE: Skip authentication
-        print("⚠️ TESTING MODE: Running without Firebase Authentication")
-        print("⚠️ Make sure Firestore rules allow unauthenticated access!")
+        // TEST MODE REMOVED: Now using strict authentication
+        print("✅ Firebase initialized. Waiting for Auth...")
     }
     
     // --- Connectivity Test ---
@@ -56,10 +55,10 @@ class FirebaseManager {
         
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
-                print("❌ NETWORK TEST FAILED: \(error.localizedDescription)")
-                print("💡 App might not have network entitlements!")
+                print(" NETWORK TEST FAILED: \(error.localizedDescription)")
+                print(" App might not have network entitlements!")
             } else {
-                print("✅ Network access confirmed")
+                print(" Network access confirmed")
             }
         }
         task.resume()
@@ -67,9 +66,25 @@ class FirebaseManager {
     
     // --- Testing Helpers ---
     // TESTING MODE: Skip auth completely
+    // Authenticate Anonymously
     func waitForAuth(timeout: TimeInterval = 15.0, completion: @escaping (Bool) -> Void) {
-        print("⚠️ TESTING MODE: Skipping authentication")
-        completion(true)
+        if Auth.auth().currentUser != nil {
+            print("✅ Already authenticated (UID: \(Auth.auth().currentUser?.uid ?? ""))")
+            completion(true)
+            return
+        }
+
+        print("🔐 Authenticating anonymously...")
+        Auth.auth().signInAnonymously { result, error in
+            if let error = error {
+                print("❌ Authentication Failed: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+            
+            print("✅ Authenticated successfully (UID: \(result?.user.uid ?? ""))")
+            completion(true)
+        }
     }
     
     // Helper: Check if Firebase is ready

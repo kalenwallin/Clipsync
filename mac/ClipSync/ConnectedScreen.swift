@@ -77,7 +77,7 @@ struct ConnectedScreen: View {
         .frame(width: 590, height: 590)
         .ignoresSafeArea() // Extends to window edges
         .onAppear {
-            print("🔄 Starting clipboard sync...")
+            print(" Starting clipboard sync...")
             ClipboardManager.shared.startMonitoring()
             ClipboardManager.shared.listenForAndroidClipboard()
             playEntranceAnimations()

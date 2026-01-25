@@ -340,7 +340,7 @@ struct HomeScreen: View {
                 isTestingEncryption = false
                 
                 if let decrypted = decrypted, decrypted == testString {
-                    encryptionTestResult = "✅ Encryption working correctly"
+                    encryptionTestResult = " Encryption working correctly"
                     showEncryptionSuccess = true
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
@@ -379,7 +379,7 @@ struct HomeScreen: View {
             let decryptedData = try AES.GCM.open(sealedBox, using: key)
             return String(data: decryptedData, encoding: .utf8)
         } catch {
-            print("❌ Decryption test failed: \(error)")
+            print(" Decryption test failed: \(error)")
             return nil
         }
     }
@@ -587,7 +587,7 @@ struct CheckEncryptionCard: View {
                     Spacer()
                     
                     // Show error text if needed
-                    if let result = encryptionTestResult, !result.contains("✅") {
+                    if let result = encryptionTestResult, !result.contains("") {
                          HStack {
                             Image(systemName: "xmark.square.fill")
                                 .foregroundColor(.red)

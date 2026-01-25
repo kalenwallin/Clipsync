@@ -242,7 +242,7 @@ struct FinalScreen: View {
             
             // Finish Setup Button
             Button(action: {
-                print("✅ Finish Setup tapped")
+                print("Finish Setup tapped")
                 PairingManager.shared.completeSetup()
             }) {
                 Text("Finish Setup")

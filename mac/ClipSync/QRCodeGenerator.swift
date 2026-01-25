@@ -38,8 +38,8 @@ class QRCodeGenerator: ObservableObject {
         let jsonDict: [String: String] = [
             "macId": macDeviceId,
             "deviceName": macName,
-            "server": currentRegion, // ✅ Tell Phone which server to use
-            "secret": sharedSecretHex // ✅ Send Dynamic Key
+            "server": currentRegion, //  Tell Phone which server to use
+            "secret": sharedSecretHex //  Send Dynamic Key
         ]
         
         var plainTextData: Data?
@@ -52,7 +52,7 @@ class QRCodeGenerator: ObservableObject {
         }
         
         guard let dataToEncrypt = plainTextData else {
-            print("❌ Failed to prepare data for encryption")
+            print(" Failed to prepare data for encryption")
             return
         }
 
@@ -60,13 +60,13 @@ class QRCodeGenerator: ObservableObject {
         // The QR code must be readable by the phone to get the Secret Key.
         if let jsonString = String(data: dataToEncrypt, encoding: .utf8) {
              pairingCode = jsonString
-             print("🔓 Plaintext Pairing Code: \(pairingCode)")
+             print(" Plaintext Pairing Code: \(pairingCode)")
         } else {
-             print("❌ Failed to convert data to string")
+             print(" Failed to convert data to string")
              return
         }
         
-        print("🔲 Generating QR Code...")
+        print(" Generating QR Code...")
         
         // --- Image Generation (CoreImage) ---
         let data = Data(pairingCode.utf8)
@@ -74,7 +74,7 @@ class QRCodeGenerator: ObservableObject {
         filter.setValue("L", forKey: "inputCorrectionLevel")
         
         guard let outputImage = filter.outputImage else {
-            print("❌ Failed to generate QR code")
+            print(" Failed to generate QR code")
             return
         }
         
@@ -83,7 +83,7 @@ class QRCodeGenerator: ObservableObject {
         let scaledImage = outputImage.transformed(by: transform)
         
         guard let cgImage = context.createCGImage(scaledImage, from: scaledImage.extent) else {
-            print("❌ Failed to create CGImage")
+            print(" Failed to create CGImage")
             return
         }
         
@@ -92,7 +92,7 @@ class QRCodeGenerator: ObservableObject {
             height: scaledImage.extent.height
         ))
         
-        print("✅ QR Code generated successfully!")
+        print(" QR Code generated successfully!")
     }
     
     // Helper to convert Hex String to Data
@@ -118,7 +118,7 @@ class QRCodeGenerator: ObservableObject {
         if status == errSecSuccess {
             return bytes.map { String(format: "%02hhX", $0) }.joined()
         }
-        print("❌ Failed to generate random key, falling back to legacy default (NOT SECURE)")
+        print("Failed to generate random key, falling back to legacy default (NOT SECURE)")
         return "5D41402ABC4B2A76B9719D911017C59228B4637452F80776313460C451152033"
     }
 }
