@@ -58,6 +58,9 @@ fun LandingScreen(
     onGetStartedClick: () -> Unit = {}
 ) {
     // --- Responsiveness ---
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = configuration.screenHeightDp.dp
     // Reference Design: 412x915 dp
     // Scales all UI elements proportionally to screen size
     val widthScale = screenWidth.value / 412f

@@ -6,7 +6,7 @@ struct ConnectedScreen: View {
     @StateObject private var pairingManagerr = PairingManager.shared
     @State private var navigateToFinal = false
     
-    @State private var navigateToFinal = false
+
     
     // --- Animation States ---
     @State private var titleOpacity: Double = 0

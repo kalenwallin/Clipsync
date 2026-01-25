@@ -66,10 +66,6 @@ class ClipboardManager: ObservableObject {
         if isSyncPaused {
             stopMonitoring()
             stopListening()
-        isSyncPaused.toggle()
-        if isSyncPaused {
-            stopMonitoring()
-            stopListening()
         } else {
             startMonitoring()
             listenForAndroidClipboard()
@@ -77,8 +73,6 @@ class ClipboardManager: ObservableObject {
     }
     
     func pullClipboard() {
-    func pullClipboard() {
-
         stopListening()
         listenForAndroidClipboard()
     }
@@ -88,8 +82,6 @@ class ClipboardManager: ObservableObject {
     }
     
     func stopMonitoring() {
-        timer?.cancel()
-        timer = nil
         timer?.cancel()
         timer = nil
     }
@@ -111,7 +103,7 @@ class ClipboardManager: ObservableObject {
         guard text != lastCopiedText else { return }
         lastCopiedText = text
         
-        lastCopiedText = text
+
         
         guard syncFromMac else {
             return

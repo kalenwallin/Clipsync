@@ -244,7 +244,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                          win.setIsVisible(true)
                     }
                     win.makeKeyAndOrderFront(nil)
-                    win.makeKeyAndOrderFront(nil)
                 }
             }
         } else {

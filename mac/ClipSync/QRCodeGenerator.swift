@@ -38,8 +38,6 @@ class QRCodeGenerator: ObservableObject {
         let jsonDict: [String: String] = [
             "macId": macDeviceId,
             "deviceName": macName,
-            "macId": macDeviceId,
-            "deviceName": macName,
             "server": currentRegion, // ✅ Tell Phone which server to use
             "secret": sharedSecretHex // ✅ Send Dynamic Key
         ]
@@ -58,28 +56,14 @@ class QRCodeGenerator: ObservableObject {
             return
         }
 
-        // ENCRYPT
-        do {
-            let keyData = self.startHexToData(hex: sharedSecretHex)
-            let key = SymmetricKey(data: keyData)
-            
-            // AES-GCM Seal (Generates random Nonce/IV)
-            let sealedBox = try AES.GCM.seal(dataToEncrypt, using: key)
-            
-            // Output format: IV + Ciphertext + Tag (Standard 'combined' format)
-            // Base64 encode for QR
-            if let combinedData = sealedBox.combined {
-                pairingCode = combinedData.base64EncodedString()
-                print("🔒 Encrypted Pairing Code (Base64): \(pairingCode)")
-            } else {
-                print("❌ Failed to combine sealed box")
-                return
-            }
-            
-        } catch {
-            print("❌ Encryption failed: \(error)")
-            // Fallback (for debugging or legacy) - likely shouldn't happen in prod
-            pairingCode = String(data: dataToEncrypt, encoding: .utf8) ?? ""
+        // NO ENCRYPTION for Initial Handshake
+        // The QR code must be readable by the phone to get the Secret Key.
+        if let jsonString = String(data: dataToEncrypt, encoding: .utf8) {
+             pairingCode = jsonString
+             print("🔓 Plaintext Pairing Code: \(pairingCode)")
+        } else {
+             print("❌ Failed to convert data to string")
+             return
         }
         
         print("🔲 Generating QR Code...")

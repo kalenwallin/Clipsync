@@ -18,6 +18,7 @@ object FirestoreManager {
     // Supports:
     // 1. JSON (New V1 Format) - Contains {server, secret, macId}
     // 2. Legacy - Fallback for older versions
+    fun parseQRData(qrData: String): Map<String, Any>? {
         try {
             if (qrData.trim().startsWith("{")) {
                 val jsonObject = JSONObject(qrData)

@@ -54,6 +54,7 @@ class PairingManager: ObservableObject {
                 guard let self = self else { return }
                 
                 if let error = error {
+                    let nsError = error as NSError
                     if nsError.code == 7 {
                         DispatchQueue.main.async {
                             self.pairingError = "Permission denied. Check Firestore rules."
@@ -66,6 +67,7 @@ class PairingManager: ObservableObject {
                     return
                 }
                 
+                guard let documents = snapshot?.documents else { return }
                 if documents.isEmpty {
                     return
                 }
@@ -99,6 +101,8 @@ class PairingManager: ObservableObject {
                 }
             }
         }
+        
+        guard let pairingDoc = validPairing else {
             return
         }
         
