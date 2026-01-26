@@ -22,7 +22,8 @@ class UpdateChecker: ObservableObject {
 
     // --- Update Check Logic ---
     func checkForUpdates() {
-        let urlString = "https://api.github.com/repos/\(repoOwner)/\(repoName)/releases/latest"
+        // Changed to /releases (list) instead of /releases/latest to support Pre-releases (Betas)
+        let urlString = "https://api.github.com/repos/\(repoOwner)/\(repoName)/releases?per_page=1"
         guard let url = URL(string: urlString) else { return }
 
         var request = URLRequest(url: url)
@@ -36,13 +37,19 @@ class UpdateChecker: ObservableObject {
             }
 
             do {
-                let release = try JSONDecoder().decode(GitHubRelease.self, from: data)
+                // Decode ARRAY of releases, take the first one
+                let releases = try JSONDecoder().decode([GitHubRelease].self, from: data)
                 
-                DispatchQueue.main.async {
-                    self?.compareVersions(latestTag: release.tag_name, release: release)
+                if let latestRelease = releases.first {
+                    DispatchQueue.main.async {
+                        self?.compareVersions(latestTag: latestRelease.tag_name, release: latestRelease)
+                    }
                 }
             } catch {
                 print("Failed to parse release data: \(error)")
+                if let str = String(data: data, encoding: .utf8) {
+                     print("Raw Response: \(str)")
+                }
             }
         }.resume()
     }
