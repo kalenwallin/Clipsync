@@ -178,83 +178,46 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // REMOVED: Default to regular policy initially, updateDockPolicy will handle it.
         
         // Setup Popover
-        let popover = NSPopover()
-        popover.contentSize = NSSize(width: 280, height: 400)
-        popover.behavior = .transient
-        popover.contentViewController = NSHostingController(rootView: MenuBarView())
-        self.popover = popover
+        let pop = NSPopover()
+        pop.contentSize = NSSize(width: 280, height: 400)
+        pop.behavior = .transient
+        pop.contentViewController = NSHostingController(rootView: MenuBarView())
+        self.popover = pop
         
-        // Observe pairing state to show/hide menu bar icon
-        PairingManager.shared.$isSetupComplete
+        // Observe Pairing State for Dock & Menu Bar
+        PairingManager.shared.$isPaired
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isComplete in
-                self?.updateMenuBarState(show: isComplete)
+            .sink { [weak self] paired in
+                self?.updateMenuBarState(show: paired) // Menu Bar Icon
+                self?.updateDockPolicy()               // Dock Icon
             }
             .store(in: &cancellables)
-        
-        // Observe Window Events for Dock Icon Management
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleWindowUpdate),
-            name: NSWindow.didBecomeKeyNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleWindowUpdate),
-            name: NSWindow.willCloseNotification,
-            object: nil
-        )
-        
-        // --- Background Fetch Logic ---
-        // Updates dock policy based on window visibility to support "Accessory" mode
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.updateDockPolicy()
-        }
-        
-        // Prevent App Nap
-        preventAppSleep()
     }
     
-    @objc func handleWindowUpdate(_ notification: Notification) {
-        // Debounce/Delay to ensure window state is settled
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.updateDockPolicy()
-        }
-    }
-    
+    // Window Observers are NO LONGER needed for Dock Policy
+    // Removing them to prevent interference
+
     func updateDockPolicy() {
-        let isMainWindowVisible = NSApp.windows.contains { window in
-             // Check if window is loaded and potentially visible (even if currently not key)
-            return window.identifier?.rawValue == "mainWindow"
-        }
+        // New User Requirement:
+        // 1. Setup/Unpaired -> Show Dock Icon (.regular)
+        // 2. Paired -> Hide Dock Icon (.accessory) - EVEN if Settings window is open
         
-        if isMainWindowVisible {
-             // FORCE regular policy if we have a window, don't wait for 'visible' or 'key' status
-             // surviving "NotVisible" state from logs
+        if PairingManager.shared.isPaired {
+             // Paired Mode: Ghost in the machine (Menu Bar Only)
+             if NSApp.activationPolicy() != .accessory {
+                 NSApp.setActivationPolicy(.accessory)
+                 print("Dock Policy: ACCESSORY (Paired)")
+             }
+        } else {
+            // Setup Mode: Standard App behavior
             if NSApp.activationPolicy() != .regular {
                 NSApp.setActivationPolicy(.regular)
+                print("Dock Policy: REGULAR (Unpaired)")
             }
             
-            // Aggressively bring to front
+            // Ensure window is reachable in Setup Mode
             DispatchQueue.main.async {
                 NSApp.activate(ignoringOtherApps: true)
-                if let win = NSApp.windows.first(where: { $0.identifier?.rawValue == "mainWindow" }) {
-                    if !win.isVisible {
-                         win.setIsVisible(true)
-                    }
-                    win.makeKeyAndOrderFront(nil)
-                }
-            }
-        } else {
-            // Only switch back to accessory if we REALLY need to, to avoid flickering
-            // But if main window is closed/hidden, go to accessory
-            if NSApp.activationPolicy() != .accessory {
-                // Check one more time to be safe?
-                 if !NSApp.windows.contains(where: { $0.isVisible && $0.identifier?.rawValue == "mainWindow" }) {
-                     NSApp.setActivationPolicy(.accessory)
-                     print(" Activation Policy changed to: ACCESSORY")
-                 }
             }
         }
     }
@@ -298,7 +261,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         )
         
         if success == kIOReturnSuccess {
-
             // Sleep prevention successful
         } else {
             // Failed to prevent sleep
