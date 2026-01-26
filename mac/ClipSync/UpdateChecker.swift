@@ -1,0 +1,84 @@
+import Foundation
+import Combine
+
+struct GitHubRelease: Decodable {
+    let tag_name: String
+    let html_url: String
+    let body: String?
+}
+
+class UpdateChecker: ObservableObject {
+    static let shared = UpdateChecker()
+    
+    @Published var updateAvailable: Bool = false
+    @Published var latestVersion: String = ""
+    @Published var downloadURL: URL?
+    @Published var releaseNotes: String = ""
+
+    // --- GitHub API Config ---
+    private let repoOwner = "WinShell-Bhanu"
+    private let repoName = "Clipsync"
+    private let currentVersion = "1.0.0" 
+
+    // --- Update Check Logic ---
+    func checkForUpdates() {
+        let urlString = "https://api.github.com/repos/\(repoOwner)/\(repoName)/releases/latest"
+        guard let url = URL(string: urlString) else { return }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("ClipSync-Mac-App", forHTTPHeaderField: "User-Agent")
+
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            guard let data = data, error == nil else {
+                print("Update check failed: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+
+            do {
+                let release = try JSONDecoder().decode(GitHubRelease.self, from: data)
+                
+                DispatchQueue.main.async {
+                    self?.compareVersions(latestTag: release.tag_name, release: release)
+                }
+            } catch {
+                print("Failed to parse release data: \(error)")
+            }
+        }.resume()
+    }
+
+    // --- Version Comparison ---
+    private func compareVersions(latestTag: String, release: GitHubRelease) {
+        let cleanLatest = latestTag.replacingOccurrences(of: "v", with: "")
+        
+        // Get actual app version or use fallback
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? currentVersion
+        let cleanCurrent = appVersion.replacingOccurrences(of: "v", with: "")
+
+        if isVersionNewer(current: cleanCurrent, latest: cleanLatest) {
+            print("Update available: \(latestTag)")
+            self.latestVersion = latestTag
+            self.downloadURL = URL(string: release.html_url)
+            self.releaseNotes = release.body ?? "New update available!"
+            self.updateAvailable = true
+        } else {
+            print("App is up to date.")
+        }
+    }
+
+    private func isVersionNewer(current: String, latest: String) -> Bool {
+        let currentParts = current.split(separator: ".").compactMap { Int($0) }
+        let latestParts = latest.split(separator: ".").compactMap { Int($0) }
+        
+        let length = max(currentParts.count, latestParts.count)
+        
+        for i in 0..<length {
+            let c = i < currentParts.count ? currentParts[i] : 0
+            let l = i < latestParts.count ? latestParts[i] : 0
+            
+            if l > c { return true }
+            if l < c { return false }
+        }
+        return false
+    }
+}
