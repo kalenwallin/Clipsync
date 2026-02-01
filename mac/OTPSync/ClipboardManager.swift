@@ -38,7 +38,7 @@ class ClipboardManager: ObservableObject {
     private var watchdogTimer: Timer?  // Fix for infinite timer loop
     private var lastChangeCount = 0
     private var lastCopiedText: String = ""
-    private var ignoreNextChange = false
+    private var ignoreChangeCount = 0  // Number of clipboard changes to ignore (clearContents + setString = 2)
 
     // Convex subscription
     private var clipboardSubscription: AnyCancellable?
@@ -118,8 +118,8 @@ class ClipboardManager: ObservableObject {
     }
 
     private func processClipboardChange() {
-        if ignoreNextChange {
-            ignoreNextChange = false
+        if ignoreChangeCount > 0 {
+            ignoreChangeCount -= 1
             return
         }
 
@@ -236,7 +236,8 @@ class ClipboardManager: ObservableObject {
                 // Duplicate Check
                 guard content != self.lastCopiedText else { return }
 
-                self.ignoreNextChange = true
+                // Ignore next 2 changes: clearContents() and setString() each trigger a change
+                self.ignoreChangeCount = 2
                 self.pasteboard.clearContents()
                 self.pasteboard.setString(content, forType: .string)
                 self.lastCopiedText = content
