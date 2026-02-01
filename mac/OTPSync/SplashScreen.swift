@@ -112,7 +112,7 @@ struct LandingScreenAnimatedContent: View {
 
             // Get Started Button (decorative - actual navigation happens in LandingScreen)
             if showButton {
-                Button(action: { }) {
+                Button(action: {}) {
                     Text("Get Started")
                         .font(.system(size: 20, weight: .medium, design: .default))
                         .foregroundColor(Color(red: 0.38, green: 0.498, blue: 0.612))
