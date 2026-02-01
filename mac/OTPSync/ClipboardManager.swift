@@ -19,6 +19,9 @@ class ClipboardManager: ObservableObject {
     @Published var syncCountToday: Int = 0
     @Published var syncCountSession: Int = 0
     @Published var syncCountAllTime: Int = 0
+    @Published var sentCount: Int = 0
+    @Published var receivedCount: Int = 0
+    @Published var syncStreak: Int = 0
 
     private let syncStatsKey = "syncStats"
     private var sessionStartDate: Date = Date()
@@ -138,7 +141,7 @@ class ClipboardManager: ObservableObject {
             )
             self.history.insert(newItem, at: 0)
             self.lastSyncedTime = Date()
-            self.incrementSyncCount()
+            self.incrementSyncCount(direction: .sent)
         }
     }
 
@@ -244,7 +247,7 @@ class ClipboardManager: ObservableObject {
                 )
                 self.history.insert(newItem, at: 0)
                 self.lastSyncedTime = Date()
-                self.incrementSyncCount()
+                self.incrementSyncCount(direction: .received)
 
                 // Send macOS notification
                 NotificationManager.shared.sendClipboardSyncNotification(
@@ -337,6 +340,8 @@ class ClipboardManager: ObservableObject {
     func loadSyncStats() {
         let defaults = UserDefaults.standard
         syncCountAllTime = defaults.integer(forKey: "\(syncStatsKey)_allTime")
+        sentCount = defaults.integer(forKey: "\(syncStatsKey)_sent")
+        receivedCount = defaults.integer(forKey: "\(syncStatsKey)_received")
 
         // Check if today's date matches stored date
         let storedDateString = defaults.string(forKey: "\(syncStatsKey)_todayDate") ?? ""
@@ -351,15 +356,62 @@ class ClipboardManager: ObservableObject {
             defaults.set(0, forKey: "\(syncStatsKey)_today")
         }
 
+        // Calculate sync streak
+        syncStreak = calculateSyncStreak(defaults: defaults, todayString: todayString)
+
         sessionStartDate = Date()
         syncCountSession = 0
     }
 
-    func incrementSyncCount() {
+    private func calculateSyncStreak(defaults: UserDefaults, todayString: String) -> Int {
+        var streakDates = defaults.stringArray(forKey: "\(syncStatsKey)_streakDates") ?? []
+        
+        // If no dates yet, streak is 0
+        guard !streakDates.isEmpty else { return 0 }
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        // Sort dates in descending order (most recent first)
+        streakDates.sort { $0 > $1 }
+        
+        var streak = 0
+        var expectedDate = Date()
+        
+        // If today isn't in the list yet, start checking from yesterday
+        if streakDates.first != todayString {
+            expectedDate = Calendar.current.date(byAdding: .day, value: -1, to: expectedDate) ?? expectedDate
+        }
+        
+        for dateString in streakDates {
+            let expectedDateString = formatDateString(expectedDate)
+            
+            if dateString == expectedDateString {
+                streak += 1
+                expectedDate = Calendar.current.date(byAdding: .day, value: -1, to: expectedDate) ?? expectedDate
+            } else if dateString < expectedDateString {
+                // Gap in dates, streak is broken
+                break
+            }
+            // If dateString > expectedDateString, skip (future date edge case)
+        }
+        
+        return streak
+    }
+
+    func incrementSyncCount(direction: ClipboardDirection) {
         DispatchQueue.main.async {
             self.syncCountToday += 1
             self.syncCountSession += 1
             self.syncCountAllTime += 1
+            
+            switch direction {
+            case .sent:
+                self.sentCount += 1
+            case .received:
+                self.receivedCount += 1
+            }
+            
             self.saveSyncStats()
         }
     }
@@ -368,7 +420,24 @@ class ClipboardManager: ObservableObject {
         let defaults = UserDefaults.standard
         defaults.set(syncCountAllTime, forKey: "\(syncStatsKey)_allTime")
         defaults.set(syncCountToday, forKey: "\(syncStatsKey)_today")
-        defaults.set(formatDateString(Date()), forKey: "\(syncStatsKey)_todayDate")
+        defaults.set(sentCount, forKey: "\(syncStatsKey)_sent")
+        defaults.set(receivedCount, forKey: "\(syncStatsKey)_received")
+        
+        let todayString = formatDateString(Date())
+        defaults.set(todayString, forKey: "\(syncStatsKey)_todayDate")
+        
+        // Update streak dates
+        var streakDates = defaults.stringArray(forKey: "\(syncStatsKey)_streakDates") ?? []
+        if !streakDates.contains(todayString) {
+            streakDates.append(todayString)
+            // Keep only last 365 days to prevent unbounded growth
+            if streakDates.count > 365 {
+                streakDates = Array(streakDates.suffix(365))
+            }
+            defaults.set(streakDates, forKey: "\(syncStatsKey)_streakDates")
+            // Recalculate streak
+            syncStreak = calculateSyncStreak(defaults: defaults, todayString: todayString)
+        }
     }
 
     private func formatDateString(_ date: Date) -> String {

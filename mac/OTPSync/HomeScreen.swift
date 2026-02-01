@@ -339,15 +339,30 @@ struct SyncStatsCard: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     StatRow(
-                        icon: "clock.fill",
-                        label: "Today",
-                        value: "\(clipboardManager.syncCountToday)"
+                        icon: "arrow.up.circle.fill",
+                        label: "Sent",
+                        value: formatNumber(clipboardManager.sentCount)
                     )
 
                     StatRow(
-                        icon: "bolt.fill",
-                        label: "Session",
-                        value: "\(clipboardManager.syncCountSession)"
+                        icon: "arrow.down.circle.fill",
+                        label: "Received",
+                        value: formatNumber(clipboardManager.receivedCount)
+                    )
+
+                    StatRow(
+                        icon: "flame.fill",
+                        label: "Sync Streak",
+                        value: "\(clipboardManager.syncStreak) day\(clipboardManager.syncStreak == 1 ? "" : "s")"
+                    )
+
+                    Divider()
+                        .padding(.vertical, 2)
+
+                    StatRow(
+                        icon: "clock.fill",
+                        label: "Today",
+                        value: "\(clipboardManager.syncCountToday)"
                     )
 
                     StatRow(
