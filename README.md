@@ -72,6 +72,63 @@ ClipSync uses an Accessibility Service to detect copy events. On **Android 13+**
 
 ---
 
+## 🔨 Building from Source
+
+### Android
+
+#### Prerequisites
+- Android Studio (recommended) or Gradle
+- JDK 17+
+
+#### Debug APK
+
+```bash
+cd android
+./gradlew assembleDebug
+```
+
+The APK will be at: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+#### Release APK
+
+```bash
+cd android
+./gradlew assembleRelease
+```
+
+The APK will be at: `android/app/build/outputs/apk/release/app-release.apk`
+
+### macOS
+
+#### Prerequisites
+- Xcode 15+
+- macOS 14+
+
+#### Option 1: Using Xcode (Recommended)
+
+1. Open the project in Xcode:
+   ```bash
+   open mac/ClipSync.xcodeproj
+   ```
+2. Select your signing team in the project settings if needed
+3. Press **⌘B** to build or **⌘R** to build and run
+
+#### Option 2: Using Command Line
+
+For a release build:
+```bash
+cd mac
+xcodebuild -project ClipSync.xcodeproj -scheme ClipSync -configuration Release build
+```
+
+For a debug build:
+```bash
+cd mac
+xcodebuild -project ClipSync.xcodeproj -scheme ClipSync -configuration Debug build
+```
+
+---
+
 ## 🤝 Contributing
 
 We love contributions!
