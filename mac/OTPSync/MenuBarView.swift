@@ -16,8 +16,6 @@ struct MenuBarView: View {
 
     // View States
     @State private var showingRePairQR = false
-    @State private var isHoveringSend = false
-    @State private var isHoveringPull = false
     @State private var isHoveringSettings = false
     @State private var isHoveringQuit = false
     @State private var isAuthenticating = false  // Prevents double prompts
@@ -138,36 +136,6 @@ struct MenuBarView: View {
                         .padding(.horizontal, 16)
                         .opacity(0.5)
 
-                    // Actions Grid
-                    HStack(spacing: 12) {
-                        // Send Button
-                        MenuActionButton(
-                            title: "Send",
-                            icon: "arrow.up.circle",
-                            color: .blue,
-                            isHovering: $isHoveringSend
-                        ) {
-                            // Dispatch async to prevent menu UI freeze
-                            DispatchQueue.main.async {
-                                clipboardManager.startMonitoring()
-                            }
-                        }
-
-                        // Pull Button
-                        MenuActionButton(
-                            title: "Pull",
-                            icon: "arrow.down.circle",
-                            color: .purple,
-                            isHovering: $isHoveringPull
-                        ) {
-                            // Dispatch async to prevent menu UI freeze
-                            DispatchQueue.main.async {
-                                clipboardManager.pullClipboard()
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 16)
-
                     // Footer Links
                     HStack {
                         Button(action: {
@@ -265,36 +233,6 @@ struct MenuBarView: View {
 }
 
 // MARK: - Subviews & Styles
-
-struct MenuActionButton: View {
-    let title: String
-    let icon: String
-    let color: Color
-    @Binding var isHovering: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.system(size: 22, weight: .medium))
-                    .foregroundColor(color)
-
-                Text(title)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.primary)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.primary.opacity(isHovering ? 0.08 : 0.03))
-            )
-        }
-        .buttonStyle(.plain)
-        .onHover { isHovering = $0 }
-    }
-}
 
 struct FooterLabelStyle: LabelStyle {
     var isDestructive: Bool = false
