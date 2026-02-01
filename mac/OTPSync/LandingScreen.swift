@@ -55,7 +55,7 @@ struct LandingScreen: View {
                         Image("logo")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 360, height: 360)
+                            .frame(width: 200, height: 200)
                             .offset(y: -20)
 
                         // Get Started Button
