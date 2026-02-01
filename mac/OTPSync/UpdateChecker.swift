@@ -16,7 +16,7 @@ class UpdateChecker: ObservableObject {
     @Published var releaseNotes: String = ""
 
     // --- GitHub API Config ---
-    private let repoOwner = "WinShell-Bhanu"
+    private let repoOwner = "kalenwallin"
     private let repoName = "OTPSync"
     private let currentVersion = "1.0.0"
 
