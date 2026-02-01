@@ -66,7 +66,6 @@ struct LandingScreenAnimatedContent: View {
     @State private var showLogo = false
     @State private var showButton = false
     @State private var showFooter = false
-    @State private var navigateToQR = false
 
     #if DEBUG
         @ObserveInjection var forceRedraw
@@ -111,9 +110,9 @@ struct LandingScreenAnimatedContent: View {
                     .transition(.scale(scale: 0.92).combined(with: .opacity))
             }
 
-            // Get Started Button
+            // Get Started Button (decorative - actual navigation happens in LandingScreen)
             if showButton {
-                Button(action: { navigateToQR = true }) {
+                Button(action: { }) {
                     Text("Get Started")
                         .font(.system(size: 20, weight: .medium, design: .default))
                         .foregroundColor(Color(red: 0.38, green: 0.498, blue: 0.612))
@@ -169,10 +168,6 @@ struct LandingScreenAnimatedContent: View {
             }
         }
         .frame(width: 590, height: 590)
-        // REMOVED NavigationStack - ContentView already provides it
-        .navigationDestination(isPresented: $navigateToQR) {
-            QRGenScreen()
-        }
         .onAppear {
             withAnimation(.easeOut(duration: 0.5).delay(0.1)) { showTitle = true }
             withAnimation(.spring(response: 0.6, dampingFraction: 0.75).delay(0.25)) {
