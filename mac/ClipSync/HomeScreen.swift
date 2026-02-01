@@ -10,7 +10,6 @@ struct HomeScreen: View {
     @AppStorage("syncToMac") private var syncToMac = true
     @AppStorage("syncFromMac") private var syncFromMac = true
 
-    @State private var hoveredClipboardItem: UUID? = nil
     @State private var showRepairQR = false
 
     @State private var contentOpacity: Double = 0
@@ -238,17 +237,9 @@ struct HomeScreen: View {
                                         ForEach(
                                             Array(clipboardManager.history.prefix(20)), id: \.id
                                         ) { item in
-                                            ClipboardHistoryRow(
-                                                item: item,
-                                                isHovered: hoveredClipboardItem == item.id
-                                            )
-                                            .onHover { hovering in
-                                                withAnimation(.easeInOut(duration: 0.2)) {
-                                                    hoveredClipboardItem = hovering ? item.id : nil
-                                                }
-                                            }
-                                            .padding(.horizontal, 16)
-                                            .padding(.vertical, 12)
+                                            ClipboardHistoryRow(item: item)
+                                                .padding(.horizontal, 16)
+                                                .padding(.vertical, 12)
 
                                             if item.id
                                                 != clipboardManager.history.prefix(20).last?.id
@@ -420,7 +411,6 @@ struct RePairButton: View {
 
 struct ClipboardHistoryRow: View {
     let item: ClipboardItem
-    let isHovered: Bool
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -433,19 +423,10 @@ struct ClipboardHistoryRow: View {
                     Spacer()
                 }
 
-                if isHovered {
-                    Text(item.content.prefix(100) + (item.content.count > 100 ? "..." : ""))
-                        .font(.system(size: 13))
-                        .foregroundColor(.black.opacity(0.9))
-                        .lineLimit(2)
-                        .transition(.opacity)
-                } else {
-                    Text("••••••••••••••••••••••••••••")
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundColor(.black.opacity(0.3))
-                        .tracking(2)
-                        .lineLimit(1)
-                }
+                Text(item.content.prefix(100) + (item.content.count > 100 ? "..." : ""))
+                    .font(.system(size: 13))
+                    .foregroundColor(.black.opacity(0.9))
+                    .lineLimit(2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
