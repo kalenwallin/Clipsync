@@ -7,16 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BF18D1972EE3266F007C36EF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BF18D1962EE3266F007C36EF /* GoogleService-Info.plist */; };
 		BFF698172EFD43C60037416F /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF94DD432EF29B7F0034A1B9 /* Security.framework */; };
-		BFF6981F2EFD6C6B0037416F /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = BFF6981E2EFD6C6B0037416F /* FirebaseCore */; };
-		BFF698212EFD6C6B0037416F /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = BFF698202EFD6C6B0037416F /* FirebaseDatabase */; };
-		BFF698232EFD6C6B0037416F /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = BFF698222EFD6C6B0037416F /* FirebaseFirestore */; };
 		BFF6982C2EFD70300037416F /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = BFF6982B2EFD70300037416F /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BF18D1962EE3266F007C36EF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		BF1CFB822E887C7500B7A454 /* ClipSync.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClipSync.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF94DD432EF29B7F0034A1B9 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -35,10 +30,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BFF698172EFD43C60037416F /* Security.framework in Frameworks */,
-				BFF6981F2EFD6C6B0037416F /* FirebaseCore in Frameworks */,
 				BFF6982C2EFD70300037416F /* Lottie in Frameworks */,
-				BFF698212EFD6C6B0037416F /* FirebaseDatabase in Frameworks */,
-				BFF698232EFD6C6B0037416F /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,7 +42,6 @@
 			children = (
 				BF1CFB842E887C7500B7A454 /* ClipSync */,
 				BF1CFB832E887C7500B7A454 /* Products */,
-				BF18D1962EE3266F007C36EF /* GoogleService-Info.plist */,
 				BF94DD422EF29B7F0034A1B9 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -91,9 +82,6 @@
 			);
 			name = ClipSync;
 			packageProductDependencies = (
-				BFF6981E2EFD6C6B0037416F /* FirebaseCore */,
-				BFF698202EFD6C6B0037416F /* FirebaseDatabase */,
-				BFF698222EFD6C6B0037416F /* FirebaseFirestore */,
 				BFF6982B2EFD70300037416F /* Lottie */,
 			);
 			productName = ClipSync;
@@ -108,7 +96,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2600;
-				LastUpgradeCheck = 2610;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					BF1CFB812E887C7500B7A454 = {
 						CreatedOnToolsVersion = 26.0;
@@ -125,7 +113,6 @@
 			mainGroup = BF1CFB792E887C7500B7A454;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				BFF6981B2EFD6C6B0037416F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				BFF6982A2EFD70300037416F /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -143,7 +130,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF18D1972EE3266F007C36EF /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,14 +393,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		BFF6981B2EFD6C6B0037416F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 12.7.0;
-			};
-		};
 		BFF6982A2EFD70300037416F /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
@@ -426,21 +404,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		BFF6981E2EFD6C6B0037416F /* FirebaseCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BFF6981B2EFD6C6B0037416F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCore;
-		};
-		BFF698202EFD6C6B0037416F /* FirebaseDatabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BFF6981B2EFD6C6B0037416F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseDatabase;
-		};
-		BFF698222EFD6C6B0037416F /* FirebaseFirestore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BFF6981B2EFD6C6B0037416F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
-		};
 		BFF6982B2EFD70300037416F /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BFF6982A2EFD70300037416F /* XCRemoteSwiftPackageReference "lottie-ios" */;

@@ -14,6 +14,7 @@ import android.view.Gravity
 import android.graphics.PixelFormat
 import android.view.View
 import android.provider.Settings
+import kotlinx.coroutines.*
 
 class ClipboardAccessibilityService : AccessibilityService() {
 
@@ -25,7 +26,8 @@ class ClipboardAccessibilityService : AccessibilityService() {
     private var lastEventTime = 0L
 
     private var lastRootScanTime = 0L
-    private var firestoreListener: com.google.firebase.firestore.ListenerRegistration? = null
+    private var convexPollingJob: Job? = null
+    private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     // --- Service Description ---
     // This service listens for 'Copy' events system-wide using Accessibility APIs.
@@ -49,26 +51,19 @@ class ClipboardAccessibilityService : AccessibilityService() {
             }
 
             lastSyncedContent = text
-            uploadToFirestoreStatic(context.applicationContext, text)
+            uploadToConvexStatic(context.applicationContext, text)
         }
 
-        private fun uploadToFirestoreStatic(context: Context, text: String) {
-            try {
-                FirestoreManager.sendClipboard(
-                    context = context,
-                    text = text,
-                    onSuccess = {
-                        // Upload successful
-                    },
-                    onFailure = { e: Exception ->
-                        Log.e(TAG, "Upload Failed", e)
-                        if (lastSyncedContent == text) {
-                            lastSyncedContent = ""
-                        }
+        private fun uploadToConvexStatic(context: Context, text: String) {
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    ConvexManager.sendClipboard(context, text)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Upload Failed", e)
+                    if (lastSyncedContent == text) {
+                        lastSyncedContent = ""
                     }
-                )
-            } catch (e: Exception) {
-                Log.e(TAG, "Exception in uploadToFirestoreStatic", e)
+                }
             }
         }
     }
@@ -91,7 +86,7 @@ class ClipboardAccessibilityService : AccessibilityService() {
             // Log.d(TAG, "Direct clipboard listener registered")
 
             Log.d(TAG, "Service initialized")
-            startFirestoreListener()
+            startConvexPolling()
 
         } catch (e: Exception) {
             Log.e(TAG, "Crash in onServiceConnected", e)
@@ -319,37 +314,49 @@ class ClipboardAccessibilityService : AccessibilityService() {
 
 
 
-    private fun startFirestoreListener() {
-        try {
-            // Remove existing listener to prevent duplicates
-            firestoreListener?.remove()
+    private fun startConvexPolling() {
+        convexPollingJob?.cancel()
+        
+        convexPollingJob = serviceScope.launch {
+            var lastSeenTimestamp: Long? = null
             
-            firestoreListener = FirestoreManager.listenToClipboard(this) { content: String ->
+            while (isActive) {
                 try {
-                    if (content == lastSyncedContent || content == lastClipboardContent) {
-                        return@listenToClipboard
+                    val latest = ConvexManager.getLatestClipboard(this@ClipboardAccessibilityService)
+                    
+                    if (latest != null) {
+                        val content = latest.content
+                        val timestamp = latest.creationTime
+                        
+                        // Only process if newer than last seen and different from current clipboard
+                        if ((lastSeenTimestamp == null || timestamp > lastSeenTimestamp) &&
+                            content != lastSyncedContent && content != lastClipboardContent) {
+                            
+                            lastSeenTimestamp = timestamp
+                            ignoreNextChange = true
+                            lastSyncedContent = content
+                            lastClipboardContent = content
+                            
+                            withContext(Dispatchers.Main) {
+                                ClipboardGhostActivity.copyToClipboard(
+                                    this@ClipboardAccessibilityService,
+                                    content
+                                )
+                            }
+                            
+                            handler.postDelayed({
+                                ignoreNextChange = false
+                            }, 2000)
+                        } else if (lastSeenTimestamp == null) {
+                            lastSeenTimestamp = timestamp
+                        }
                     }
-
-                    ignoreNextChange = true
-                    lastSyncedContent = content
-                    lastClipboardContent = content
-
-                    ClipboardGhostActivity.copyToClipboard(
-                        this@ClipboardAccessibilityService,
-                        content
-                    )
-
-                    handler.postDelayed({
-                        ignoreNextChange = false
-                    }, 2000)
-
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error in Firestore listener", e)
-                    ignoreNextChange = false
+                    Log.e(TAG, "Error in Convex polling", e)
                 }
+                
+                delay(1000) // Poll every 1 second
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error starting Firestore listener", e)
         }
     }
 
@@ -369,9 +376,10 @@ class ClipboardAccessibilityService : AccessibilityService() {
             Log.e(TAG, "Error removing clipboard listener", e)
         }
 
-        // Stop Firestore listener
-        firestoreListener?.remove()
-        firestoreListener = null
+        // Stop Convex polling
+        convexPollingJob?.cancel()
+        convexPollingJob = null
+        serviceScope.cancel()
         
         // Remove pending handler callbacks to prevent leaks
         handler.removeCallbacksAndMessages(null)

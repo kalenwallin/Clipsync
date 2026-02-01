@@ -3,7 +3,6 @@
 // ClipSync
 //
 import SwiftUI
-import FirebaseCore
 import AppKit
 import Combine
 import IOKit.pwr_mgt
@@ -26,8 +25,8 @@ struct ClipSyncApp: App {
         // This prevents the app from overriding the user's choice with a potentially wrong auto-detect.
 
         
-        // --- Firebase & Sync Initialization ---
-        _ = FirebaseManager.shared
+        // --- Convex & Sync Initialization ---
+        // ConvexManager is a struct with static methods, no initialization needed
         PairingManager.shared.restorePairing()
         
         if PairingManager.shared.isPaired {

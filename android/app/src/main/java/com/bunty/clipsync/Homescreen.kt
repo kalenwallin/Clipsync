@@ -56,8 +56,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.bunty.clipsync.R
 
 @Composable
@@ -178,16 +180,28 @@ fun Homescreen(
     // --- Side Effects ---
 
     // 1. Service Listener for Real-Time Sync
-    // Listens to Firestore changes and notifies user/updates state if needed
-    DisposableEffect(Unit) {
-        val registration = FirestoreManager.listenToClipboard(context) { text ->
-             // Only process if Sync FROM Mac is enabled
-             if (DeviceManager.isSyncFromMacEnabled(context)) {
-                 // The service or listener handles the actual clipboard set logic
-                 // But we might want to show a toast or something here if managed in UI
-             }
+    // Polls Convex for clipboard changes
+    LaunchedEffect(Unit) {
+        val pairingId = DeviceManager.getPairingId(context)
+        if (pairingId != null) {
+            ConvexManager.listenToClipboard(context) { text ->
+                // Clipboard updates handled by accessibility service
+            }.collect { item ->
+                // Only process if Sync FROM Mac is enabled
+                if (item != null && DeviceManager.isSyncFromMacEnabled(context)) {
+                    val currentDeviceId = DeviceManager.getDeviceId(context)
+                    if (item.sourceDeviceId != currentDeviceId) {
+                        // Decrypt and update clipboard
+                        try {
+                            val decryptedText = ConvexManager.decryptData(context, item.content)
+                            // The accessibility service handles clipboard updates
+                        } catch (e: Exception) {
+                            // Decryption failed
+                        }
+                    }
+                }
+            }
         }
-        onDispose { registration?.remove() }
     }
 
     // Animation State
@@ -416,8 +430,18 @@ fun Homescreen(
                             fontFamily = robotoFontFamily,
                             scale = scale
                         ) {
-                             FirestoreManager.sendClipboard(context, "Hello from ClipSync! ")
-                             Toast.makeText(context, "Sent to Mac!", Toast.LENGTH_SHORT).show()
+                             scope.launch {
+                                 try {
+                                     ConvexManager.sendClipboard(context, "Hello from ClipSync! ")
+                                     withContext(Dispatchers.Main) {
+                                         Toast.makeText(context, "Sent to Mac!", Toast.LENGTH_SHORT).show()
+                                     }
+                                 } catch (e: Exception) {
+                                     withContext(Dispatchers.Main) {
+                                         Toast.makeText(context, "Failed to send", Toast.LENGTH_SHORT).show()
+                                     }
+                                 }
+                             }
                         }
                         
                         Spacer(modifier = Modifier.height((16 * scale).dp))
@@ -430,15 +454,23 @@ fun Homescreen(
                             fontFamily = robotoFontFamily,
                             scale = scale
                         ) {
-                            FirestoreManager.clearClipboard(
-                                context,
-                                onSuccess = {
-                                    Toast.makeText(context, "Cloud clipboard cleared", Toast.LENGTH_SHORT).show()
-                                },
-                                onFailure = {
-                                    Toast.makeText(context, "Failed to clear", Toast.LENGTH_SHORT).show()
+                            scope.launch {
+                                try {
+                                    ConvexManager.clearClipboard(
+                                        context,
+                                        onSuccess = {
+                                            Toast.makeText(context, "Cloud clipboard cleared", Toast.LENGTH_SHORT).show()
+                                        },
+                                        onFailure = {
+                                            Toast.makeText(context, "Failed to clear", Toast.LENGTH_SHORT).show()
+                                        }
+                                    )
+                                } catch (e: Exception) {
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(context, "Failed to clear", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
-                            )
+                            }
                         }
                     }
                 }

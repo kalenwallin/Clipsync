@@ -2,7 +2,19 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    id("com.google.gms.google-services")
+    kotlin("plugin.serialization") version "1.9.0"
+}
+
+// Load CONVEX_URL from .env.local
+val envFile = rootProject.file("../.env.local")
+val convexUrl = if (envFile.exists()) {
+    envFile.readLines()
+        .firstOrNull { it.startsWith("CONVEX_URL=") }
+        ?.substringAfter("CONVEX_URL=")
+        ?.trim()
+        ?: "https://brazen-crane-76.convex.cloud"
+} else {
+    System.getenv("CONVEX_URL") ?: "https://brazen-crane-76.convex.cloud"
 }
 
 android {
@@ -10,7 +22,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.bunty.clipsync"
+        applicationId = "com.bunty.clipsync.dev"
         minSdk = 31
         targetSdk = 36
         versionCode = 1
@@ -26,6 +38,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Convex URL from .env.local or environment
+            resValue("string", "convex_url", convexUrl)
+        }
+        debug {
+            // Convex URL from .env.local or environment
+            resValue("string", "convex_url", convexUrl)
         }
     }
 
@@ -77,15 +95,11 @@ dependencies {
     // Lottie Animation
     implementation("com.airbnb.android:lottie-compose:6.1.0")
 
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-firestore-ktx")
-    implementation("com.google.firebase:firebase-storage-ktx")
-    implementation("com.google.firebase:firebase-messaging-ktx")
+    // Kotlin Serialization (for Convex JSON parsing)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
-    // ✅ GOOGLE PLAY SERVICES - THIS WAS MISSING!
-    implementation("com.google.android.gms:play-services-base:18.3.0")
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     // QR Code Scanning
     implementation("com.google.mlkit:barcode-scanning:17.2.0")

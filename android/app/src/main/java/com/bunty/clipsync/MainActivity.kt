@@ -20,6 +20,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.background
@@ -106,39 +109,32 @@ fun ClipSyncNavigation(startDestination: String) {
                     initialCameraActive = startCamera,
                     onQRScanned = { qrData ->
                         // Parse the scanned QR data
-                        val parsedData = FirestoreManager.parseQRData(qrData)
+                        val parsedData = ConvexManager.parseQRData(qrData)
 
                         if (parsedData != null) {
-                            // REGION SAFETY CHECK
-                            val qrRegion = parsedData["serverRegion"] as? String ?: "IN"
-                            val initializedRegion = DeviceManager.initializedRegion
-
-                            if (qrRegion != initializedRegion) {
-                                Log.i("MainActivity", "Region mismatch (QR: $qrRegion vs Init: $initializedRegion). Switching preference.")
-                                DeviceManager.setTargetRegion(context, qrRegion)
-                                // No restart needed! FirestoreManager will pick up the new region dynamically.
-                            }
+                            // No region switching needed with Convex (single deployment)
 
                             Log.d("MainActivity", "Creating pairing with parsed data")
-                            FirestoreManager.createPairing(
-                                context = context,
-                                qrData = parsedData,
-                                onSuccess = { pairingId ->
-                                    Log.d("MainActivity", "Pairing success")
-                                    android.os.Handler(android.os.Looper.getMainLooper()).post {
-                                        navController.navigate("connection") {
-                                            popUpTo("landing") { inclusive = true }
+                            CoroutineScope(Dispatchers.IO).launch {
+                                ConvexManager.createPairing(
+                                    context = context,
+                                    qrData = parsedData,
+                                    onSuccess = { pairingId ->
+                                        android.os.Handler(android.os.Looper.getMainLooper()).post {
+                                            navController.navigate("connection") {
+                                                popUpTo("landing") { inclusive = true }
+                                            }
+                                        }
+                                    },
+                                    onFailure = { e ->
+                                        Log.e("MainActivity", "Pairing failed", e)
+                                        android.os.Handler(android.os.Looper.getMainLooper()).post {
+                                            Toast.makeText(context, "Pairing failed: ${e.message}", Toast.LENGTH_LONG).show()
+                                            navController.popBackStack()
                                         }
                                     }
-                                },
-                                onFailure = { e ->
-                                    Log.e("MainActivity", "Pairing failed", e)
-                                    android.os.Handler(android.os.Looper.getMainLooper()).post {
-                                        Toast.makeText(context, "Pairing failed: ${e.message}", Toast.LENGTH_LONG).show()
-                                        navController.popBackStack()
-                                    }
-                                }
-                            )
+                                )
+                            }
                         } else {
                             Log.e("MainActivity", "Failed to parse QR data")
                             android.os.Handler(android.os.Looper.getMainLooper()).post {
