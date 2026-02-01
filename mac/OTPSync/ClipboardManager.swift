@@ -156,6 +156,8 @@ class ClipboardManager: ObservableObject {
     private func uploadClipboard(text: String) {
         guard let pairingId = PairingManager.shared.pairingId else { return }
         let macDeviceId = DeviceManager.shared.getDeviceId()
+        
+        print("📤 Uploading clipboard with sourceDeviceId: \(macDeviceId)")
 
         guard let encryptedContent = encrypt(text) else { return }
 
@@ -226,7 +228,11 @@ class ClipboardManager: ObservableObject {
                 guard item.documentId != self.lastReceivedItemId else { return }
 
                 // Ignore own updates
-                guard item.sourceDeviceId != macDeviceId else { return }
+                print("📥 Received item from: \(item.sourceDeviceId), Mac ID: \(macDeviceId)")
+                guard item.sourceDeviceId != macDeviceId else { 
+                    print("⏭️ Ignoring own update")
+                    return 
+                }
 
                 self.lastReceivedItemId = item.documentId
 

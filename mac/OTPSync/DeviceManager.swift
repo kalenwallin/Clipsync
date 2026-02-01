@@ -11,6 +11,12 @@ class DeviceManager {
     
     private let deviceIdKey = "mac_device_id"
     
+    init() {
+        // Log device ID at startup for debugging
+        let id = getDeviceId()
+        print("🖥️ DeviceManager initialized with ID: \(id)")
+    }
+    
     // --- Device Identity ---
     // Get or create unique Mac device ID (Randomly generated, not hardware serial)
     func getDeviceId() -> String {
@@ -22,6 +28,7 @@ class DeviceManager {
         // Generate new random UUID
         let deviceId = UUID().uuidString
         UserDefaults.standard.set(deviceId, forKey: deviceIdKey)
+        print("🆕 Generated new Mac device ID: \(deviceId)")
         return deviceId
     }
     
