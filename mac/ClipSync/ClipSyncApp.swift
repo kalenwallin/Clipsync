@@ -172,8 +172,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         PairingManager.shared.$isPaired
             .receive(on: DispatchQueue.main)
             .sink { [weak self] paired in
-                self?.updateMenuBarState(show: paired) // Menu Bar Icon
-                self?.updateDockPolicy()               // Dock Icon
+                if paired {
+                    // When pairing: update dock policy first, then show menu bar
+                    self?.updateDockPolicy()
+                    self?.updateMenuBarState(show: true)
+                } else {
+                    // When unpairing: remove menu bar first, then update dock policy
+                    // Use slight delay to let scene cleanup complete
+                    self?.updateMenuBarState(show: false)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self?.updateDockPolicy()
+                    }
+                }
             }
             .store(in: &cancellables)
     }

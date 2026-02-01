@@ -138,7 +138,8 @@ class ConvexManager: ObservableObject {
             let wrappedData = try JSONSerialization.data(withJSONObject: wrapped)
             // Decode the wrapped array and extract the single element
             guard let wrappedString = String(data: wrappedData, encoding: .utf8),
-                  wrappedString.count > 2 else {
+                wrappedString.count > 2
+            else {
                 throw ConvexError.decodingError
             }
             // Remove the array brackets to get just the primitive JSON
