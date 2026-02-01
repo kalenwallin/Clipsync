@@ -1,4 +1,4 @@
-package com.bunty.clipsync
+package com.kalenwallin.clipsync
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

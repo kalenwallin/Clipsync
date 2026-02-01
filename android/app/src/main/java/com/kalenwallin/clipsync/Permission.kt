@@ -1,4 +1,4 @@
-package com.bunty.clipsync
+package com.kalenwallin.clipsync
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -398,8 +398,8 @@ fun isAccessibilityServiceEnabled(context: android.content.Context): Boolean {
 
         // Check if ANY of these patterns match
         val possibleNames = listOf(
-            "com.bunty.clipsync/com.bunty.clipsync.ClipboardAccessibilityService",
-            "com.bunty.clipsync/.ClipboardAccessibilityService",
+            "com.kalenwallin.clipsync/com.kalenwallin.clipsync.ClipboardAccessibilityService",
+            "com.kalenwallin.clipsync/.ClipboardAccessibilityService",
             "ClipboardAccessibilityService",
             "ClipSync" // Some ROMs just show the label
         )

@@ -1,4 +1,4 @@
-package com.bunty.clipsync
+package com.kalenwallin.clipsync
 
 import android.graphics.RenderEffect
 import android.graphics.Shader

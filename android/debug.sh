@@ -15,7 +15,7 @@
 
 set -e
 
-APP_PACKAGE="com.bunty.clipsync.dev"
+APP_PACKAGE="com.kalenwallin.clipsync.dev"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Colors for output
@@ -97,7 +97,7 @@ case "${1:-help}" in
         log_success "Installed!"
         
         log_info "Launching ClipSync..."
-        adb_cmd shell am start -n "$APP_PACKAGE/.MainActivity"
+        adb_cmd shell am start -n "$APP_PACKAGE/com.kalenwallin.clipsync.MainActivity"
         log_success "App launched!"
         
         echo ""

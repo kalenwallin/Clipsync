@@ -1,6 +1,6 @@
 ## Android Changes
 
-- After updating the Android app, run './dandroid/debug.sh run` to test the new build.
+- After updating the Android app, run './dandroid/debug.sh build` to test the new build.
 
 ## Convex Changes
 

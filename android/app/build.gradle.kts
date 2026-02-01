@@ -18,11 +18,11 @@ val convexUrl = if (envFile.exists()) {
 }
 
 android {
-    namespace = "com.bunty.clipsync"
+    namespace = "com.kalenwallin.clipsync"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.bunty.clipsync.dev"
+        applicationId = "com.kalenwallin.clipsync.dev"
         minSdk = 31
         targetSdk = 36
         versionCode = 1

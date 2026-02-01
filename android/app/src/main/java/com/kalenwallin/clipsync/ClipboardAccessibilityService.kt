@@ -1,4 +1,4 @@
-package com.bunty.clipsync
+package com.kalenwallin.clipsync
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo

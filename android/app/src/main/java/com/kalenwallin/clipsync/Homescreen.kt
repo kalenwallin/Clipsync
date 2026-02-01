@@ -1,4 +1,4 @@
-package com.bunty.clipsync
+package com.kalenwallin.clipsync
 
 import android.content.Context
 import android.content.Intent
@@ -60,7 +60,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.bunty.clipsync.R
+import com.kalenwallin.clipsync.R
 
 @Composable
 fun Homescreen(

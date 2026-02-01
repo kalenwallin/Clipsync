@@ -1,4 +1,4 @@
-package com.bunty.clipsync
+package com.kalenwallin.clipsync
 
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
