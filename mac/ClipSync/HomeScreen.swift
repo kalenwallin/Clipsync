@@ -213,7 +213,8 @@ struct HomeScreen: View {
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .frame(height: 212)
                     }
-                    .padding(.horizontal, 30)
+                    .padding(.leading, 30)
+                    .padding(.trailing, 40)
 
                     // --- Clipboard History (Bottom) ---
                     InnerGlassCard {
