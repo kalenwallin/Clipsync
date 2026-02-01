@@ -2,6 +2,7 @@ package com.bunty.clipsync
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,7 @@ import android.view.Gravity
 import android.graphics.PixelFormat
 import android.view.View
 import android.provider.Settings
+import android.widget.Toast
 import kotlinx.coroutines.*
 
 class ClipboardAccessibilityService : AccessibilityService() {
@@ -312,7 +314,27 @@ class ClipboardAccessibilityService : AccessibilityService() {
         }
     }
 
-
+    /**
+     * Write text directly to the system clipboard.
+     * This is called from the main thread when receiving clipboard from Mac.
+     * Android allows accessibility services to write to clipboard directly.
+     */
+    private fun writeToClipboard(text: String) {
+        try {
+            val clip = ClipData.newPlainText("ClipSync", text)
+            clipboardManager.setPrimaryClip(clip)
+            Log.d(TAG, "Successfully wrote to clipboard: ${text.take(20)}...")
+            Toast.makeText(this, "Synced from Mac", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to write to clipboard", e)
+            // Fallback to Ghost Activity if direct write fails
+            try {
+                ClipboardGhostActivity.copyToClipboard(this, text)
+            } catch (e2: Exception) {
+                Log.e(TAG, "Ghost Activity fallback also failed", e2)
+            }
+        }
+    }
 
     private fun startConvexPolling() {
         convexPollingJob?.cancel()
@@ -322,6 +344,12 @@ class ClipboardAccessibilityService : AccessibilityService() {
             
             while (isActive) {
                 try {
+                    // Check if sync from Mac is enabled
+                    if (!DeviceManager.isSyncFromMacEnabled(this@ClipboardAccessibilityService)) {
+                        delay(1000)
+                        continue
+                    }
+                    
                     val latest = ConvexManager.getLatestClipboard(this@ClipboardAccessibilityService)
                     
                     if (latest != null) {
@@ -339,11 +367,11 @@ class ClipboardAccessibilityService : AccessibilityService() {
                             lastSyncedContent = content
                             lastClipboardContent = content
                             
+                            // Write directly to clipboard from the accessibility service
+                            // This is more reliable than starting the Ghost Activity
+                            // Android allows writing to clipboard from accessibility services
                             withContext(Dispatchers.Main) {
-                                ClipboardGhostActivity.copyToClipboard(
-                                    this@ClipboardAccessibilityService,
-                                    content
-                                )
+                                writeToClipboard(content)
                             }
                             
                             handler.postDelayed({
