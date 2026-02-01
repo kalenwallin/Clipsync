@@ -30,11 +30,12 @@ class QRCodeGenerator: ObservableObject {
         let macDeviceId = DeviceManager.shared.getDeviceId()
         let macName = DeviceManager.shared.getMacName()
 
-        // QR payload: macId, deviceName, and encryption secret
+        // QR payload: macId, deviceName, encryption secret, and Convex URL
         let jsonDict: [String: String] = [
             "macId": macDeviceId,
             "deviceName": macName,
             "secret": sharedSecretHex,
+            "convexUrl": Secrets.convexURL,
         ]
 
         var plainTextData: Data?

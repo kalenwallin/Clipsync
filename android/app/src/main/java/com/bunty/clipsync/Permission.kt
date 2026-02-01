@@ -62,7 +62,6 @@ fun PermissionPage(onFinishSetup: () -> Unit = {}) {
 
     var accessibilityGranted by remember { mutableStateOf(false) }
     var overlayGranted by remember { mutableStateOf(false) }
-    var notificationAccessGranted by remember { mutableStateOf(false) }
 
     // --- Animation Sequence (Staggered Entrance) ---
     var showHeader by remember { mutableStateOf(false) }
@@ -70,7 +69,6 @@ fun PermissionPage(onFinishSetup: () -> Unit = {}) {
     var showItem1 by remember { mutableStateOf(false) }
     var showItem2 by remember { mutableStateOf(false) }
     var showItem3 by remember { mutableStateOf(false) }
-    var showItem4 by remember { mutableStateOf(false) }
     var showButton by remember { mutableStateOf(false) }
 
     // Trigger Animations Sequence
@@ -85,8 +83,6 @@ fun PermissionPage(onFinishSetup: () -> Unit = {}) {
         showItem2 = true
         delay(100)
         showItem3 = true
-        delay(100)
-        showItem4 = true
         delay(150)
         showButton = true
     }
@@ -117,7 +113,6 @@ fun PermissionPage(onFinishSetup: () -> Unit = {}) {
             val wasEnabled = accessibilityGranted
             accessibilityGranted = isAccessibilityServiceEnabled(context)
             overlayGranted = Settings.canDrawOverlays(context)
-            notificationAccessGranted = isNotificationServiceEnabled(context)
             
             if (Build.VERSION.SDK_INT >= 33) {
                 notificationGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
@@ -162,7 +157,7 @@ fun PermissionPage(onFinishSetup: () -> Unit = {}) {
         ) {
             Box(
                 modifier = Modifier
-                    .size(width = (390 * scale).dp, height = (467 * scale).dp)
+                    .size(width = (390 * scale).dp, height = (360 * scale).dp)
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
@@ -249,28 +244,7 @@ fun PermissionPage(onFinishSetup: () -> Unit = {}) {
                      )
                  }
 
-                 // --- Item 4: Notification Access ---
-                 AnimatedVisibility(
-                    visible = showItem4,
-                    enter = fadeIn(tween(300)) + slideInHorizontally(initialOffsetX = { -40 }, animationSpec = tween(300)),
-                    modifier = Modifier.offset(x = (20 * scale).dp, y = (360 * scale).dp)
-                 ) {
-                     PermissionItem(
-                        iconRes = R.drawable.notiaccess,
-                        title = "Notifications Access",
-                        description = "Auto-detect OTP codes for instant sync.",
-                        isChecked = notificationAccessGranted,
-                        onToggle = {
-                            if (!notificationAccessGranted) {
-                                val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-                                context.startActivity(intent)
-                                Toast.makeText(context, "Enable ClipSync Notification Access", Toast.LENGTH_LONG).show()
-                            }
-                        },
-                        fontFamily = robotoFontFamily,
-                        scale = scale
-                     )
-                 }
+
             }
         }
 
@@ -441,11 +415,6 @@ fun isAccessibilityServiceEnabled(context: android.content.Context): Boolean {
         Log.e("AccessibilityCheck", "ERROR: ${e.message}")
         return false
     }
-}
-
-fun isNotificationServiceEnabled(context: Context): Boolean {
-    val flat = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
-    return flat?.contains(context.packageName) == true
 }
 
 @Preview(showBackground = true, widthDp = 412, heightDp = 915)

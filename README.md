@@ -129,23 +129,6 @@ xcodebuild -project ClipSync.xcodeproj -scheme ClipSync -configuration Debug bui
 
 ---
 
-## 🤝 Contributing
-
-We love contributions!
-1. **Fork** the project.
-2. Create your **Feature Branch**.
-3. **Commit** your changes.
-4. **Push** to the branch.
-5. Open a **Pull Request**.
-
-### Support the Project
-
-If you find ClipSync useful and want to support its development, consider buying me a coffee!
-
-<a href="https://buymeacoffee.com/clipsync"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200"></a>
-
----
-
 ## 📜 License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.

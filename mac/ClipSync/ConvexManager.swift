@@ -20,11 +20,9 @@ class ConvexManager: ObservableObject {
     @Published var isConnected: Bool = false
     
     private init() {
-        // Get deployment URL from UserDefaults or use default
-        // This should be set via config or environment
+        // Get deployment URL from UserDefaults or use default from Secrets
         self.deploymentUrl = UserDefaults.standard.string(forKey: "convex_url") 
-            ?? Bundle.main.object(forInfoDictionaryKey: "CONVEX_URL") as? String
-            ?? "https://YOUR_DEPLOYMENT.convex.cloud"
+            ?? Secrets.convexURL
         
         // Configure URL session
         let config = URLSessionConfiguration.default
