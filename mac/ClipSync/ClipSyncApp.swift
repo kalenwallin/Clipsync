@@ -237,7 +237,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if let popover = popover, popover.isShown {
                 popover.performClose(nil)
             }
-            
+
             // Small delay to let the popover close animation complete
             // before removing the status item to avoid scene cleanup crashes
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in

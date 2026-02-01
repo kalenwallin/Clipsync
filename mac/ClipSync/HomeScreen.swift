@@ -210,7 +210,8 @@ struct HomeScreen: View {
 
                         // Right Column: Sync Stats Card
                         SyncStatsCard(clipboardManager: clipboardManager)
-                            .frame(width: 140, height: 130)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .frame(height: 212)
                     }
                     .padding(.horizontal, 30)
 
@@ -422,24 +423,31 @@ struct TickLottieView: NSViewRepresentable {
     func makeNSView(context: Context) -> NSView {
         let containerView = NSView(frame: .zero)
         containerView.wantsLayer = true
-        containerView.layer?.masksToBounds = true
+        containerView.layer?.masksToBounds = false
 
         let animationView = LottieAnimationView(name: "tick")
         animationView.contentMode = .scaleAspectFit
         animationView.loopMode = .playOnce
         animationView.animationSpeed = 1.0
         animationView.backgroundBehavior = .pauseAndRestore
-        animationView.autoresizingMask = [.width, .height]
-        animationView.translatesAutoresizingMaskIntoConstraints = true
+        animationView.translatesAutoresizingMaskIntoConstraints = false
 
         containerView.addSubview(animationView)
+
+        NSLayoutConstraint.activate([
+            animationView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            animationView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+            animationView.widthAnchor.constraint(equalTo: containerView.widthAnchor),
+            animationView.heightAnchor.constraint(equalTo: containerView.heightAnchor),
+        ])
+
         animationView.play()
 
         return containerView
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
-        // Frame updates are handled by autoresizingMask set in makeNSView
+        // Constraints handle layout automatically
     }
 }
 
@@ -491,15 +499,6 @@ struct ClipboardHistoryRow: View {
         HStack(alignment: .top, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
-                    Text("Copied \(timeAgo(from: item.timestamp))")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(.black.opacity(0.5))
-                        .textCase(.uppercase)
-
-                    Text("•")
-                        .font(.system(size: 10))
-                        .foregroundColor(.black.opacity(0.3))
-
                     HStack(spacing: 3) {
                         Image(systemName: item.direction == .received ? "iphone" : "laptopcomputer")
                             .font(.system(size: 9))
@@ -520,12 +519,6 @@ struct ClipboardHistoryRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-    }
-
-    private func timeAgo(from date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .full
-        return formatter.localizedString(for: date, relativeTo: Date())
     }
 }
 
