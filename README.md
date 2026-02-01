@@ -98,6 +98,38 @@ cd android
 
 The APK will be at: `android/app/build/outputs/apk/release/app-release.apk`
 
+#### Debugging
+
+A debug script is provided for streamlined development:
+
+```bash
+cd android
+
+# Build, install, and run with live logs
+./debug.sh run
+
+# Just view logs from running app
+./debug.sh logs
+
+# Enable wireless debugging (after USB setup)
+./debug.sh wireless
+
+# View all available commands
+./debug.sh
+```
+
+**Setting up USB Debugging:**
+1. Enable **Developer Options** on your Android device (tap Build Number 7 times)
+2. Enable **USB Debugging** in Developer Options
+3. Connect via USB and accept the debugging prompt on your phone
+
+**Wireless Debugging:**
+```bash
+# First connect via USB, then run:
+./debug.sh wireless
+# Now you can unplug USB and debug over WiFi
+```
+
 ### macOS
 
 #### Prerequisites
