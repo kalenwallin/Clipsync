@@ -98,7 +98,7 @@ class PairingManager: ObservableObject {
         unpairingSubscription = ConvexManager.shared.subscribe(
             to: "pairings:exists",
             args: ["pairingId": pairingId],
-            interval: 2.0,
+            interval: 30.0,  // Reduced from 2s to save Convex function calls
             type: Bool.self
         )
         .receive(on: DispatchQueue.main)

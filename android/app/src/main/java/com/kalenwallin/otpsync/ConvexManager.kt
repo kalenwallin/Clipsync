@@ -374,7 +374,7 @@ object ConvexManager {
     fun subscribeToClipboard(
         context: Context,
         pairingId: String,
-        intervalMs: Long = 500
+        intervalMs: Long = 3000  // Reduced from 500ms to save Convex function calls
     ): Flow<ConvexClipboardItem?> = flow {
         var lastItemId: String? = null
         

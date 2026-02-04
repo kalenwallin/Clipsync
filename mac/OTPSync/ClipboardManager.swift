@@ -201,10 +201,11 @@ class ClipboardManager: ObservableObject {
         lastListenerUpdate = Date()
 
         // Use Convex polling subscription
+        // Interval increased to 3s to reduce Convex function calls (free tier: 1M/month)
         clipboardSubscription = ConvexManager.shared.subscribe(
             to: "clipboard:getLatest",
             args: ["pairingId": pairingId],
-            interval: 0.5,
+            interval: 3.0,
             type: ConvexClipboardItem.self
         )
         .receive(on: DispatchQueue.main)

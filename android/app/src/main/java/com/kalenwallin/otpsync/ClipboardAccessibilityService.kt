@@ -394,7 +394,7 @@ class ClipboardAccessibilityService : AccessibilityService() {
                     Log.e(TAG, "Error in Convex polling", e)
                 }
                 
-                delay(1000) // Poll every 1 second
+                delay(3000) // Poll every 3 seconds (reduced from 1s to save Convex function calls)
             }
         }
     }
