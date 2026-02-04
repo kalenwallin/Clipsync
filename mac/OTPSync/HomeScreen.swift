@@ -138,11 +138,6 @@ struct HomeScreen: View {
                             }
                             .padding(.leading, 15)
                         }
-
-                        // Right Column: Sync Stats Card
-                        SyncStatsCard(clipboardManager: clipboardManager)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .frame(height: 212)
                     }
                     .padding(.leading, 30)
                     .padding(.trailing, 40)
@@ -251,95 +246,6 @@ struct HomeScreen: View {
             )
         }
         .enableInjection()
-    }
-}
-
-// MARK: - Sync Stats Card
-
-struct SyncStatsCard: View {
-    @ObservedObject var clipboardManager: ClipboardManager
-
-    var body: some View {
-        InnerGlassCard {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Sync Stats")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(.black.opacity(0.6))
-                    .padding(.top, 12)
-                    .padding(.leading, 12)
-
-                VStack(alignment: .leading, spacing: 6) {
-                    StatRow(
-                        icon: "arrow.up.circle.fill",
-                        label: "Sent",
-                        value: formatNumber(clipboardManager.sentCount)
-                    )
-
-                    StatRow(
-                        icon: "arrow.down.circle.fill",
-                        label: "Received",
-                        value: formatNumber(clipboardManager.receivedCount)
-                    )
-
-                    StatRow(
-                        icon: "flame.fill",
-                        label: "Sync Streak",
-                        value:
-                            "\(clipboardManager.syncStreak) day\(clipboardManager.syncStreak == 1 ? "" : "s")"
-                    )
-
-                    Divider()
-                        .padding(.vertical, 2)
-
-                    StatRow(
-                        icon: "clock.fill",
-                        label: "Today",
-                        value: "\(clipboardManager.syncCountToday)"
-                    )
-
-                    StatRow(
-                        icon: "infinity",
-                        label: "All Time",
-                        value: formatNumber(clipboardManager.syncCountAllTime)
-                    )
-                }
-                .padding(.horizontal, 12)
-
-                Spacer()
-            }
-        }
-    }
-
-    private func formatNumber(_ num: Int) -> String {
-        if num >= 1000 {
-            return String(format: "%.1fK", Double(num) / 1000.0)
-        }
-        return "\(num)"
-    }
-}
-
-struct StatRow: View {
-    let icon: String
-    let label: String
-    let value: String
-
-    var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.system(size: 10))
-                .foregroundColor(Color(red: 0.125, green: 0.263, blue: 0.600))
-                .frame(width: 14)
-
-            Text(label)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(.black.opacity(0.7))
-
-            Spacer()
-
-            Text(value)
-                .font(.system(size: 13, weight: .bold, design: .rounded))
-                .foregroundColor(Color(red: 0.125, green: 0.263, blue: 0.600))
-        }
     }
 }
 
